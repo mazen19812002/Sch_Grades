@@ -499,7 +499,7 @@
     <!-- Main Container -->
     <div class="main-wrapper" id="mainWrapper">
 
-        <!-- TAB 0: Portrait First Model -->
+        <!-- TAB 0: Portrait First Model (يحتوي حكراً على القائمة المنسدلة للفصل) -->
         <div class="tab-content active" id="tab-0" data-tab="0">
             <div class="sheet-header">
                 <div class="header-row">
@@ -529,8 +529,8 @@
                         </select>
                     </div>
                     <div class="header-item">
-                        <label>فصل:</label>
-                        <select class="header-class-name" onchange="syncClassSelectors(this)">
+                        <label>فصل (تحديد البيانات):</label>
+                        <select id="main-class-selector" class="header-class-name" onchange="onMainClassChange(this.value)">
                             <option value="اول 1" selected>اول 1</option>
                             <option value="ثاني 2">ثاني 2</option>
                         </select>
@@ -583,11 +583,8 @@
                         <input type="text" class="static-header-val month-label-1" value="أكتوبر" readonly style="background: #e0f2fe; text-align: center;">
                     </div>
                     <div class="header-item">
-                        <label>فصل:</label>
-                        <select class="header-class-name" onchange="syncClassSelectors(this)">
-                            <option value="اول 1" selected>اول 1</option>
-                            <option value="ثاني 2">ثاني 2</option>
-                        </select>
+                        <label>الفصل المختار:</label>
+                        <input type="text" class="static-header-val class-display-val" value="اول 1" readonly style="background: #e0f2fe; text-align: center;">
                     </div>
                 </div>
             </div>
@@ -637,11 +634,8 @@
                         <input type="text" class="static-header-val month-label-2" value="نوفمبر" readonly style="background: #e0f2fe; text-align: center;">
                     </div>
                     <div class="header-item">
-                        <label>فصل:</label>
-                        <select class="header-class-name" onchange="syncClassSelectors(this)">
-                            <option value="اول 1" selected>اول 1</option>
-                            <option value="ثاني 2">ثاني 2</option>
-                        </select>
+                        <label>الفصل المختار:</label>
+                        <input type="text" class="static-header-val class-display-val" value="اول 1" readonly style="background: #e0f2fe; text-align: center;">
                     </div>
                 </div>
             </div>
@@ -666,10 +660,9 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZ1p14DEr-x2WGsY0fwTa0AIqWpF_W_vCnhQZzUFA9ksByAVEQE_l8JWrItIRMoXIe/exec";
 
-        function syncClassSelectors(changedSelect) {
-            const val = changedSelect.value;
-            document.querySelectorAll('.header-class-name').forEach(sel => {
-                sel.value = val;
+        function onMainClassChange(selectedVal) {
+            document.querySelectorAll('.class-display-val').forEach(el => {
+                el.value = selectedVal;
             });
             loadFromGoogleSheet();
         }
@@ -680,7 +673,6 @@
                 sel.value = term;
             });
 
-            // تحديث عناوين التبويبات والشهور والحدود الأدنى والأقصى للتواريخ
             const btnTab1 = document.getElementById('btn-tab-1');
             const btnTab2 = document.getElementById('btn-tab-2');
             const monthLabel1 = document.querySelector('.month-label-1');
@@ -698,7 +690,6 @@
                 if(monthLabel2) monthLabel2.value = "مارس";
             }
 
-            // إعادة ضبط نطاقات التواريخ وفقاً للفصل الدراسي المختار
             updateDatePickersLimits();
             loadFromGoogleSheet();
         }
@@ -706,11 +697,9 @@
         function getDateLimitsForTab(tabIndex) {
             const term = document.querySelector('.header-term').value;
             if (term === "الاول") {
-                // الترم الأول 2026: أكتوبر لـ Tab 1 ونوفمبر لـ Tab 2
                 if (tabIndex === 1) return { min: "2026-10-01", max: "2026-10-31" };
                 if (tabIndex === 2) return { min: "2026-11-01", max: "2026-11-30" };
             } else {
-                // الترم الثاني 2027: فبراير لـ Tab 1 ومارس لـ Tab 2
                 if (tabIndex === 1) return { min: "2027-02-01", max: "2027-02-28" };
                 if (tabIndex === 2) return { min: "2027-03-01", max: "2027-03-31" };
             }
@@ -727,8 +716,6 @@
                 dateInputs.forEach((input, idx) => {
                     input.min = limits.min;
                     input.max = limits.max;
-                    
-                    // تحكم ديناميكي تعاقبي: الخانة التي لها قيمة تُحدد الحد الأدنى للخانة التالية
                     if (idx > 0 && dateInputs[idx - 1].value) {
                         input.min = dateInputs[idx - 1].value;
                     }
@@ -745,8 +732,6 @@
 
             if (changedIndex !== -1) {
                 const selectedDate = changedInput.value;
-
-                // تحديث الحد الأدنى لجميع التواريخ التالية لتكون متعاقبة
                 for (let i = changedIndex + 1; i < dateInputs.length; i++) {
                     if (selectedDate) {
                         dateInputs[i].min = selectedDate;
@@ -759,9 +744,21 @@
             updateAllAbsenceScoresInPage(changedInput);
         }
 
+        function validateMax(input) {
+            const max = parseFloat(input.getAttribute('max'));
+            let val = parseFloat(input.value);
+            if (!isNaN(max) && !isNaN(val)) {
+                if (val > max) {
+                    input.value = max;
+                } else if (val < 0) {
+                    input.value = 0;
+                }
+            }
+        }
+
         function saveToGoogleSheet() {
             const payload = { sheets: [] };
-            const selectedClass = document.querySelector('.header-class-name').value.replace(/\s+/g, '_');
+            const selectedClass = document.getElementById('main-class-selector').value.replace(/\s+/g, '_');
             const term = document.querySelector('.header-term').value;
 
             for (let tabIndex = 0; tabIndex <= 2; tabIndex++) {
@@ -816,7 +813,7 @@
                 });
             }
 
-            alert(`جاري حفظ بيانات الفصل (${document.querySelector('.header-class-name').value}) في جوجل شيت...`);
+            alert(`جاري حفظ بيانات الفصل (${document.getElementById('main-class-selector').value}) في جوجل شيت...`);
 
             const formData = new URLSearchParams();
             formData.append('data', JSON.stringify(payload));
@@ -867,7 +864,7 @@
                 }
             }
 
-            const selectedClass = document.querySelector('.header-class-name').value.replace(/\s+/g, '_');
+            const selectedClass = document.getElementById('main-class-selector').value.replace(/\s+/g, '_');
             const term = document.querySelector('.header-term').value;
 
             data.sheets.forEach((sheetObj) => {
@@ -887,7 +884,6 @@
                 const sheetRows = sheetObj.rows;
                 if (!sheetRows || sheetRows.length === 0) return;
 
-                // 1. استعادة تواريخ الغياب من السطر الأول (Header)
                 const headerRow = sheetRows[0];
                 if (headerRow && (targetTabIdx === 1 || targetTabIdx === 2)) {
                     const dateInputs = tabContent.querySelectorAll('thead input[type="date"]');
@@ -899,7 +895,6 @@
                     });
                 }
 
-                // 2. استعادة صفوف البيانات للطلاب
                 const rows = tabContent.querySelectorAll('tbody tr');
                 for (let i = 1; i < sheetRows.length && (i - 1) < rows.length; i++) {
                     const excelRow = sheetRows[i];
@@ -925,18 +920,6 @@
 
             updateDatePickersLimits();
             updateTab0DynamicAverages();
-        }
-
-        function validateMax(input) {
-            const max = parseFloat(input.getAttribute('max'));
-            let val = parseFloat(input.value);
-            if (!isNaN(max) && !isNaN(val)) {
-                if (val > max) {
-                    input.value = max;
-                } else if (val < 0) {
-                    input.value = 0;
-                }
-            }
         }
 
         function handleArrowNavigation(e) {
@@ -1031,7 +1014,7 @@
                 if (ratio > 1) ratio = 1;
                 absenceScore = 10 - (ratio * 10);
             }
-            absenceScore = Math.round(absenceScore * 10) / 10;
+            absenceScore = Math.min(10, Math.max(0, Math.round(absenceScore * 10) / 10));
 
             const attendanceCell = row.querySelector('.calc-attendance-score');
             if (attendanceCell) {
@@ -1054,23 +1037,30 @@
         function calcLandscape(row) {
             const numInputs = row.querySelectorAll('input[type="number"]');
             if (numInputs.length >= 9) {
-                let h1 = parseFloat(numInputs[0].value) || 0;
-                let h2 = parseFloat(numInputs[1].value) || 0;
-                let h3 = parseFloat(numInputs[2].value) || 0;
-                let h4 = parseFloat(numInputs[3].value) || 0;
+                // ضبط درجات الواجب (أقصى درجة لطلاية الواجب الواحدة 2.5)
+                let h1 = Math.min(2.5, parseFloat(numInputs[0].value) || 0);
+                let h2 = Math.min(2.5, parseFloat(numInputs[1].value) || 0);
+                let h3 = Math.min(2.5, parseFloat(numInputs[2].value) || 0);
+                let h4 = Math.min(2.5, parseFloat(numInputs[3].value) || 0);
                 
-                let sumHw = h1 + h2 + h3 + h4;
+                let sumHw = Math.min(10, h1 + h2 + h3 + h4);
                 const totalHwCell = row.querySelector('.calc-total-hw');
                 if(totalHwCell) totalHwCell.innerText = sumHw;
 
-                let w1 = parseFloat(numInputs[4].value) || 0;
-                let w2 = parseFloat(numInputs[5].value) || 0;
-                let w3 = parseFloat(numInputs[6].value) || 0;
-                let w4 = parseFloat(numInputs[7].value) || 0;
+                // ضبط درجات التقييم (أقصى درجة لتقييم الأسبوع 5)
+                let w1 = Math.min(5, parseFloat(numInputs[4].value) || 0);
+                let w2 = Math.min(5, parseFloat(numInputs[5].value) || 0);
+                let w3 = Math.min(5, parseFloat(numInputs[6].value) || 0);
+                let w4 = Math.min(5, parseFloat(numInputs[7].value) || 0);
                 
-                let sumAssessments = w1 + w2 + w3 + w4;
+                let sumAssessments = Math.min(20, w1 + w2 + w3 + w4);
                 const totalAssCell = row.querySelector('.calc-total-assessments');
                 if(totalAssCell) totalAssCell.innerText = sumAssessments;
+
+                // اختبار الشهر (أقصى درجة 15)
+                if (numInputs[8]) {
+                    if (parseFloat(numInputs[8].value) > 15) numInputs[8].value = 15;
+                }
             }
             updateTab0DynamicAverages();
         }
@@ -1092,52 +1082,62 @@
                         nameInput0.value = nameInput1.value;
                     }
 
+                    // اختبار الشهرين (أقصى درجة 15 لكل اختبار)
                     const numInputs1 = row1.querySelectorAll('input[type="number"]');
-                    const octTest = numInputs1.length > 0 ? parseFloat(numInputs1[numInputs1.length - 1].value) || '' : '';
+                    let octTest = numInputs1.length > 0 ? parseFloat(numInputs1[numInputs1.length - 1].value) : '';
+                    if (octTest !== '' && !isNaN(octTest)) octTest = Math.min(15, octTest);
+                    else octTest = '';
                     cells0[2].innerText = octTest;
 
                     const numInputs2 = row2.querySelectorAll('input[type="number"]');
-                    const novTest = numInputs2.length > 0 ? parseFloat(numInputs2[numInputs2.length - 1].value) || '' : '';
+                    let novTest = numInputs2.length > 0 ? parseFloat(numInputs2[numInputs2.length - 1].value) : '';
+                    if (novTest !== '' && !isNaN(novTest)) novTest = Math.min(15, novTest);
+                    else novTest = '';
                     cells0[3].innerText = novTest;
 
-                    const totalTests = (octTest !== '' || novTest !== '') ? ((parseFloat(octTest)||0) + (parseFloat(novTest)||0)) : '';
+                    // مجموع الاختبارات (الحد الأقصى 30)
+                    let totalTests = (octTest !== '' || novTest !== '') ? Math.min(30, (parseFloat(octTest)||0) + (parseFloat(novTest)||0)) : '';
                     cells0[4].innerText = totalTests;
 
+                    // متوسط المواظبة (الحد الأقصى 10)
                     const att1Score = row1.querySelector('.calc-attendance-score')?.innerText;
                     const att2Score = row2.querySelector('.calc-attendance-score')?.innerText;
                     const att1 = att1Score !== undefined && att1Score !== '' ? parseFloat(att1Score) : null;
                     const att2 = att2Score !== undefined && att2Score !== '' ? parseFloat(att2Score) : null;
                     
                     let avgAtt = '';
-                    if(att1 !== null && att2 !== null) avgAtt = Math.round(((att1 + att2) / 2) * 10) / 10;
-                    else if(att1 !== null) avgAtt = att1;
-                    else if(att2 !== null) avgAtt = att2;
+                    if(att1 !== null && att2 !== null) avgAtt = Math.min(10, Math.round(((att1 + att2) / 2) * 10) / 10);
+                    else if(att1 !== null) avgAtt = Math.min(10, att1);
+                    else if(att2 !== null) avgAtt = Math.min(10, att2);
                     cells0[5].innerText = avgAtt;
 
+                    // مجموع الواجب (الحد الأقصى 10)
                     const hw1Text = row1.querySelector('.calc-total-hw')?.innerText;
                     const hw2Text = row2.querySelector('.calc-total-hw')?.innerText;
                     const hw1 = hw1Text !== undefined && hw1Text !== '' ? parseFloat(hw1Text) : null;
                     const hw2 = hw2Text !== undefined && hw2Text !== '' ? parseFloat(hw2Text) : null;
                     let avgHw10 = '';
-                    if(hw1 !== null && hw2 !== null) avgHw10 = Math.round(((hw1 + hw2) / 2) * 10) / 10;
-                    else if(hw1 !== null) avgHw10 = hw1;
-                    else if(hw2 !== null) avgHw10 = hw2;
+                    if(hw1 !== null && hw2 !== null) avgHw10 = Math.min(10, Math.round(((hw1 + hw2) / 2) * 10) / 10);
+                    else if(hw1 !== null) avgHw10 = Math.min(10, hw1);
+                    else if(hw2 !== null) avgHw10 = Math.min(10, hw2);
                     cells0[6].innerText = avgHw10;
 
+                    // متوسط التقييمات (الحد الأقصى 20)
                     const ass1Text = row1.querySelector('.calc-total-assessments')?.innerText;
                     const ass2Text = row2.querySelector('.calc-total-assessments')?.innerText;
                     const ass1 = ass1Text !== undefined && ass1Text !== '' ? parseFloat(ass1Text) : null;
                     const ass2 = ass2Text !== undefined && ass2Text !== '' ? parseFloat(ass2Text) : null;
                     let avgAss = '';
-                    if(ass1 !== null && ass2 !== null) avgAss = Math.round(((ass1 + ass2) / 2) * 10) / 10;
-                    else if(ass1 !== null) avgAss = ass1;
-                    else if(ass2 !== null) avgAss = ass2;
+                    if(ass1 !== null && ass2 !== null) avgAss = Math.min(20, Math.round(((ass1 + ass2) / 2) * 10) / 10);
+                    else if(ass1 !== null) avgAss = Math.min(20, ass1);
+                    else if(ass2 !== null) avgAss = Math.min(20, ass2);
                     cells0[7].innerText = avgAss;
 
+                    // المجموع النهائي (الحد الأقصى 70)
                     let grandTotal = '';
                     if (totalTests !== '' || avgAtt !== '' || avgHw10 !== '' || avgAss !== '') {
                         grandTotal = (parseFloat(totalTests)||0) + (parseFloat(avgAtt)||0) + (parseFloat(avgHw10)||0) + (parseFloat(avgAss)||0);
-                        grandTotal = Math.round(grandTotal * 10) / 10;
+                        grandTotal = Math.min(70, Math.round(grandTotal * 10) / 10);
                     }
                     cells0[8].innerText = grandTotal;
                 }
@@ -1387,7 +1387,7 @@
 
         function exportExcel() {
             const wb = XLSX.utils.book_new();
-            const selectedClass = document.querySelector('.header-class-name').value;
+            const selectedClass = document.getElementById('main-class-selector').value;
             const term = document.querySelector('.header-term').value;
 
             for (let tabIndex = 0; tabIndex <= 2; tabIndex++) {
