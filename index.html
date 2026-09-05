@@ -9,7 +9,7 @@
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
-            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-bg: rgba(255, 255, 255, 0.65);
             --glass-border: rgba(255, 255, 255, 0.9);
             --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
             --text-color: #0f172a;
@@ -48,23 +48,25 @@
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border);
             border-radius: 14px;
-            padding: 8px 20px;
+            padding: 8px 15px;
             box-shadow: var(--glass-shadow);
             z-index: 1000;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .tabs-container {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
         .tab-btn {
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.9);
-            padding: 6px 14px;
-            border-radius: 10px;
-            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
             font-weight: bold;
             color: var(--text-color);
             cursor: pointer;
@@ -82,19 +84,48 @@
             box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
         }
 
+        .action-row-top {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            color: #ffffff;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-print { background: linear-gradient(135deg, #0284c7, #0369a1); }
+        .btn-export { background: linear-gradient(135deg, #10b981, #059669); }
+        .btn-import { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .btn-gsheet { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+        .btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
+
         .controls-group {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .control-btn {
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.9);
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             color: var(--text-color);
             cursor: pointer;
@@ -111,8 +142,8 @@
 
         /* Main Container */
         .main-wrapper {
-            margin-top: 70px;
-            margin-bottom: 45px;
+            margin-top: 80px;
+            margin-bottom: 40px;
             width: 100%;
             max-width: 100%;
             transition: transform 0.2s ease;
@@ -140,13 +171,13 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Optimized Header Info Section */
+        /* Header Info Section */
         .sheet-header {
             display: flex;
             flex-direction: column;
             gap: 8px;
             margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.85);
             padding: 10px 12px;
             border-radius: 8px;
             border: 2px solid #0284c7;
@@ -178,11 +209,12 @@
 
         .header-item input, .header-item select {
             width: 100%;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             border: 1px solid #0284c7;
             padding: 4px 6px;
             border-radius: 6px;
             font-size: 12px;
+            font-weight: bold;
             color: var(--text-color);
             outline: none;
         }
@@ -198,7 +230,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.7);
             padding: 6px 12px;
             border-radius: 6px;
             margin-bottom: 8px;
@@ -312,38 +344,6 @@
             border: 1px solid #7dd3fc;
         }
 
-        /* Action Buttons Row */
-        .action-row {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 8px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .btn-action {
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-            color: #ffffff;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-print { background: linear-gradient(135deg, #0284c7, #0369a1); }
-        .btn-export { background: linear-gradient(135deg, #10b981, #059669); }
-        .btn-import { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        .btn-gsheet { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
-        .btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
-
         /* Floating Toggle & Footer */
         .floating-toggle {
             position: fixed;
@@ -396,7 +396,7 @@
         }
 
         @media print {
-            .top-bar, .floating-toggle, footer, .action-row, .print-controls-bar {
+            .top-bar, .floating-toggle, footer, .action-row-top, .print-controls-bar {
                 display: none !important;
             }
             body {
@@ -465,9 +465,20 @@
     <div class="top-bar" id="topBar">
         <div class="tabs-container">
             <button class="tab-btn active" onclick="switchTab(0)">النموذج الأول (طولي)</button>
-            <button class="tab-btn" onclick="switchTab(1)">النموذج الثاني - تكرار 1 (عرضي)</button>
-            <button class="tab-btn" onclick="switchTab(2)">النموذج الثاني - تكرار 2 (عرضي)</button>
+            <button class="tab-btn" onclick="switchTab(1)">شهر أكتوبر (عرضي)</button>
+            <button class="tab-btn" onclick="switchTab(2)">شهر نوفمبر (عرضي)</button>
         </div>
+
+        <div class="action-row-top">
+            <input type="file" id="excel-file-0" style="display:none" accept=".xlsx, .xls" onchange="importExcel(event)">
+            <button class="btn-action btn-import" onclick="document.getElementById('excel-file-0').click()">استيراد اكسل</button>
+            <button class="btn-action btn-export" onclick="exportExcel()">تصدير اكسل</button>
+            <button class="btn-action btn-gsheet" onclick="saveToGoogleSheet()">حفظ في جوجل شيت</button>
+            <button class="btn-action btn-gsheet" style="background: linear-gradient(135deg, #0d9488, #0f766e);" onclick="loadFromGoogleSheet()">استعادة من جوجل شيت</button>
+            <a href="https://docs.google.com/spreadsheets/d/18YCsXBDWYN_-dExi43s5_88yMJannOrbYC2DDaYnCmU/edit?usp=sharing" target="_blank" class="btn-action btn-gsheet">فتح الشيت</a>
+            <button class="btn-action btn-print" onclick="window.print()">طباعة الكشوف</button>
+        </div>
+
         <div class="controls-group">
             <button class="control-btn" onclick="adjustZoom(-0.1)" title="تصغير">-</button>
             <button class="control-btn" onclick="adjustZoom(0.1)" title="تكبير">+</button>
@@ -509,7 +520,10 @@
                     </div>
                     <div class="header-item">
                         <label>فصل:</label>
-                        <input type="text" class="header-class-name" placeholder="مثال: اول 1" value="اول 1">
+                        <select class="header-class-name" onchange="syncClassSelectors(this)">
+                            <option value="اول 1" selected>اول 1</option>
+                            <option value="ثاني 2">ثاني 2</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -523,20 +537,9 @@
             <div class="table-container" id="container-0">
                 <!-- Pages generated via JS -->
             </div>
-
-            <!-- Action Buttons Row -->
-            <div class="action-row">
-                <input type="file" id="excel-file-0" style="display:none" accept=".xlsx, .xls" onchange="importExcel(event)">
-                <button class="btn-action btn-import" onclick="document.getElementById('excel-file-0').click()">استيراد اكسل</button>
-                <button class="btn-action btn-export" onclick="exportExcel()">تصدير اكسل</button>
-                <button class="btn-action btn-gsheet" onclick="saveToGoogleSheet()">حفظ في جوجل شيت</button>
-                <button class="btn-action btn-gsheet" style="background: linear-gradient(135deg, #0d9488, #0f766e);" onclick="loadFromGoogleSheet()">استعادة من جوجل شيت</button>
-                <a href="https://docs.google.com/spreadsheets/d/18YCsXBDWYN_-dExi43s5_88yMJannOrbYC2DDaYnCmU/edit?usp=sharing" target="_blank" class="btn-action btn-gsheet">فتح جوجل شيت</a>
-                <button class="btn-action btn-print" onclick="window.print()">طباعة كشوف الدرجات</button>
-            </div>
         </div>
 
-        <!-- TAB 1: Landscape Second Model - Copy 1 (October Default) -->
+        <!-- TAB 1: Landscape Second Model - October -->
         <div class="tab-content" id="tab-1" data-tab="1">
             <div class="sheet-header">
                 <div class="header-row">
@@ -574,7 +577,10 @@
                     </div>
                     <div class="header-item">
                         <label>فصل:</label>
-                        <input type="text" class="header-class-name" placeholder="مثال: اول 1" value="اول 1">
+                        <select class="header-class-name" onchange="syncClassSelectors(this)">
+                            <option value="اول 1" selected>اول 1</option>
+                            <option value="ثاني 2">ثاني 2</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -590,7 +596,7 @@
             </div>
         </div>
 
-        <!-- TAB 2: Landscape Second Model - Copy 2 (November Default) -->
+        <!-- TAB 2: Landscape Second Model - November -->
         <div class="tab-content" id="tab-2" data-tab="2">
             <div class="sheet-header">
                 <div class="header-row">
@@ -628,7 +634,10 @@
                     </div>
                     <div class="header-item">
                         <label>فصل:</label>
-                        <input type="text" class="header-class-name" placeholder="مثال: اول 1" value="اول 1">
+                        <select class="header-class-name" onchange="syncClassSelectors(this)">
+                            <option value="اول 1" selected>اول 1</option>
+                            <option value="ثاني 2">ثاني 2</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -651,16 +660,27 @@
     <footer>All rights are reserved to Dr. Mazen Badawy – Doctor of English Teaching & Testing</footer>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZ1p14DEr-x2WGsY0fwTa0AIqWpF_W_vCnhQZzUFA9ksByAVEQE_l8JWrItIRMoXIe/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxM13lMsGMTthpi21xMMGlLW1kzAHx5_fQ-xlUHZg3vLeYZcHQUk9Sa0sA8t92X2cL-/exec";
+
+        function syncClassSelectors(changedSelect) {
+            const val = changedSelect.value;
+            document.querySelectorAll('.header-class-name').forEach(sel => {
+                sel.value = val;
+            });
+            // استرجاع بيانات الفصل المحدد تلقائياً
+            loadFromGoogleSheet();
+        }
 
         function saveToGoogleSheet() {
             const payload = { sheets: [] };
+            const selectedClass = document.querySelector('.header-class-name').value.replace(/\s+/g, '_');
 
             for (let tabIndex = 0; tabIndex <= 2; tabIndex++) {
                 const tabContent = document.getElementById(`tab-${tabIndex}`);
                 if (!tabContent) continue;
 
-                let sheetName = tabIndex === 0 ? "النموذج_الأول" : (tabIndex === 1 ? "اكتوبر" : "نوفمبر");
+                let baseSheetName = tabIndex === 0 ? "النموذج_الأول" : (tabIndex === 1 ? "اكتوبر" : "نوفمبر");
+                let sheetName = `${baseSheetName}_${selectedClass}`;
 
                 const rows = tabContent.querySelectorAll('tbody tr');
                 const data = [];
@@ -697,7 +717,7 @@
                 });
             }
 
-            alert("جاري إرسال البيانات وحفظها في جوجل شيت...");
+            alert(`جاري حفظ بيانات الفصل (${document.querySelector('.header-class-name').value}) في جوجل شيت...`);
 
             const formData = new URLSearchParams();
             formData.append('data', JSON.stringify(payload));
@@ -720,22 +740,45 @@
         }
 
         function loadFromGoogleSheet() {
+            const oldScript = document.getElementById('gsheet-jsonp-script');
+            if (oldScript) oldScript.remove();
+
             const script = document.createElement('script');
+            script.id = 'gsheet-jsonp-script';
             script.src = `${WEB_APP_URL}?callback=handleSheetData&_ts=${Date.now()}`;
+            
+            script.onerror = function() {
+                alert("تعذر الاتصال بجوجل شيت لبيانات الاستعادة.");
+                if (script.parentNode) script.parentNode.removeChild(script);
+            };
+
             document.body.appendChild(script);
         }
 
         function handleSheetData(data) {
-            if (!data || !data.sheets) {
-                alert("لم يتم العثور على بيانات مسترجعة.");
-                return;
+            const script = document.getElementById('gsheet-jsonp-script');
+            if (script) script.remove();
+
+            if (!data || !data.sheets) return;
+
+            // تفريغ المدخلات الحالية قبل استعادة بيانات الفصل المختار
+            for (let t = 0; t <= 2; t++) {
+                const c = document.getElementById(`container-${t}`);
+                if(c) {
+                    c.querySelectorAll('input').forEach(i => {
+                        if(i.type === 'checkbox') i.checked = false;
+                        else i.value = '';
+                    });
+                }
             }
+
+            const selectedClass = document.querySelector('.header-class-name').value.replace(/\s+/g, '_');
 
             data.sheets.forEach((sheetObj) => {
                 let targetTabIdx = -1;
-                if (sheetObj.name.includes("النموذج_الأول")) targetTabIdx = 0;
-                else if (sheetObj.name.includes("اكتوبر")) targetTabIdx = 1;
-                else if (sheetObj.name.includes("نوفمبر")) targetTabIdx = 2;
+                if (sheetObj.name.includes(`النموذج_الأول_${selectedClass}`)) targetTabIdx = 0;
+                else if (sheetObj.name.includes(`اكتوبر_${selectedClass}`)) targetTabIdx = 1;
+                else if (sheetObj.name.includes(`نوفمبر_${selectedClass}`)) targetTabIdx = 2;
 
                 if (targetTabIdx === -1) return;
 
@@ -753,21 +796,25 @@
                     if (excelRow[1] !== undefined && inputs[0]) {
                         inputs[0].value = excelRow[1];
                     }
+
                     for (let j = 2; j < excelRow.length && (j - 2) < inputs.length; j++) {
-                        if (inputs[j - 1]) {
-                            if (inputs[j - 1].type === 'checkbox') {
-                                inputs[j - 1].checked = (excelRow[j] === 'TRUE' || excelRow[j] === true || excelRow[j] === 'true');
+                        const currentInput = inputs[j - 1];
+                        if (currentInput) {
+                            if (currentInput.type === 'checkbox') {
+                                currentInput.checked = (excelRow[j] === 'TRUE' || excelRow[j] === true || excelRow[j] === 'true');
                             } else {
-                                inputs[j - 1].value = excelRow[j] !== undefined && excelRow[j] !== null ? excelRow[j] : '';
+                                currentInput.value = (excelRow[j] !== undefined && excelRow[j] !== null) ? excelRow[j] : '';
                             }
-                            inputs[j - 1].dispatchEvent(new Event('input'));
                         }
+                    }
+
+                    if (targetTabIdx === 1 || targetTabIdx === 2) {
+                        calcLandscape(targetRow);
                     }
                 }
             });
 
             updateTab0DynamicAverages();
-            alert("تمت استعادة كافة الأسماء والدرجات بنجاح من جوجل شيت!");
         }
 
         function validateMax(input) {
@@ -942,33 +989,53 @@
                     }
 
                     const numInputs1 = row1.querySelectorAll('input[type="number"]');
-                    const octTest = numInputs1.length > 0 ? parseFloat(numInputs1[numInputs1.length - 1].value) || 0 : 0;
+                    const octTest = numInputs1.length > 0 ? parseFloat(numInputs1[numInputs1.length - 1].value) || '' : '';
                     cells0[2].innerText = octTest;
 
                     const numInputs2 = row2.querySelectorAll('input[type="number"]');
-                    const novTest = numInputs2.length > 0 ? parseFloat(numInputs2[numInputs2.length - 1].value) || 0 : 0;
+                    const novTest = numInputs2.length > 0 ? parseFloat(numInputs2[numInputs2.length - 1].value) || '' : '';
                     cells0[3].innerText = novTest;
 
-                    const totalTests = octTest + novTest;
+                    const totalTests = (octTest !== '' || novTest !== '') ? ((parseFloat(octTest)||0) + (parseFloat(novTest)||0)) : '';
                     cells0[4].innerText = totalTests;
 
-                    const att1 = parseFloat(row1.querySelector('.calc-attendance-score')?.innerText) || 10;
-                    const att2 = parseFloat(row2.querySelector('.calc-attendance-score')?.innerText) || 10;
-                    const avgAtt = Math.round(((att1 + att2) / 2) * 10) / 10;
+                    const att1Score = row1.querySelector('.calc-attendance-score')?.innerText;
+                    const att2Score = row2.querySelector('.calc-attendance-score')?.innerText;
+                    const att1 = att1Score !== undefined && att1Score !== '' ? parseFloat(att1Score) : null;
+                    const att2 = att2Score !== undefined && att2Score !== '' ? parseFloat(att2Score) : null;
+                    
+                    let avgAtt = '';
+                    if(att1 !== null && att2 !== null) avgAtt = Math.round(((att1 + att2) / 2) * 10) / 10;
+                    else if(att1 !== null) avgAtt = att1;
+                    else if(att2 !== null) avgAtt = att2;
                     cells0[5].innerText = avgAtt;
 
-                    const hw1 = parseFloat(row1.querySelector('.calc-total-hw')?.innerText) || 0; 
-                    const hw2 = parseFloat(row2.querySelector('.calc-total-hw')?.innerText) || 0; 
-                    const avgHw10 = Math.round(((hw1 + hw2) / 2) * 10) / 10; 
+                    const hw1Text = row1.querySelector('.calc-total-hw')?.innerText;
+                    const hw2Text = row2.querySelector('.calc-total-hw')?.innerText;
+                    const hw1 = hw1Text !== undefined && hw1Text !== '' ? parseFloat(hw1Text) : null;
+                    const hw2 = hw2Text !== undefined && hw2Text !== '' ? parseFloat(hw2Text) : null;
+                    let avgHw10 = '';
+                    if(hw1 !== null && hw2 !== null) avgHw10 = Math.round(((hw1 + hw2) / 2) * 10) / 10;
+                    else if(hw1 !== null) avgHw10 = hw1;
+                    else if(hw2 !== null) avgHw10 = hw2;
                     cells0[6].innerText = avgHw10;
 
-                    const ass1 = parseFloat(row1.querySelector('.calc-total-assessments')?.innerText) || 0; 
-                    const ass2 = parseFloat(row2.querySelector('.calc-total-assessments')?.innerText) || 0; 
-                    const avgAss = Math.round(((ass1 + ass2) / 2) * 10) / 10;
+                    const ass1Text = row1.querySelector('.calc-total-assessments')?.innerText;
+                    const ass2Text = row2.querySelector('.calc-total-assessments')?.innerText;
+                    const ass1 = ass1Text !== undefined && ass1Text !== '' ? parseFloat(ass1Text) : null;
+                    const ass2 = ass2Text !== undefined && ass2Text !== '' ? parseFloat(ass2Text) : null;
+                    let avgAss = '';
+                    if(ass1 !== null && ass2 !== null) avgAss = Math.round(((ass1 + ass2) / 2) * 10) / 10;
+                    else if(ass1 !== null) avgAss = ass1;
+                    else if(ass2 !== null) avgAss = ass2;
                     cells0[7].innerText = avgAss;
 
-                    const grandTotal = totalTests + avgAtt + avgHw10 + avgAss;
-                    cells0[8].innerText = Math.round(grandTotal * 10) / 10;
+                    let grandTotal = '';
+                    if (totalTests !== '' || avgAtt !== '' || avgHw10 !== '' || avgAss !== '') {
+                        grandTotal = (parseFloat(totalTests)||0) + (parseFloat(avgAtt)||0) + (parseFloat(avgHw10)||0) + (parseFloat(avgAss)||0);
+                        grandTotal = Math.round(grandTotal * 10) / 10;
+                    }
+                    cells0[8].innerText = grandTotal;
                 }
             });
         }
@@ -1066,13 +1133,13 @@
                             tableHTML += `<tr>
                                 <td class="row-index">${globalIndex}</td>
                                 <td><input type="text" class="student-name" value="${restoredName}" onpaste="handleStudentPaste(event, ${r-1}, ${page})" oninput="syncStudentName(this, ${r-1}, ${page})"></td>
-                                <td class="calc-cell">0</td>
-                                <td class="calc-cell">0</td>
-                                <td class="calc-cell">0</td>
-                                <td class="calc-cell">0</td>
-                                <td class="calc-cell">0</td>
-                                <td class="calc-cell">0</td>
-                                <td class="calc-cell" style="font-weight:bold; color:#0369a1;">0</td>
+                                <td class="calc-cell"></td>
+                                <td class="calc-cell"></td>
+                                <td class="calc-cell"></td>
+                                <td class="calc-cell"></td>
+                                <td class="calc-cell"></td>
+                                <td class="calc-cell"></td>
+                                <td class="calc-cell" style="font-weight:bold; color:#0369a1;"></td>
                                 <td>70</td>
                                 <td><input type="text"></td>
                             </tr>`;
@@ -1083,17 +1150,17 @@
                                 <td class="row-index">${globalIndex}</td>
                                 <td><input type="text" class="student-name" value="${restoredName}" oninput="syncStudentNameFromTab1(this)"></td>
                                 ${absenceInputs}
-                                <td class="calc-cell calc-attendance-score">10</td>
+                                <td class="calc-cell calc-attendance-score"></td>
                                 <td><input type="number" min="0" max="2.5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
                                 <td><input type="number" min="0" max="2.5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
                                 <td><input type="number" min="0" max="2.5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
                                 <td><input type="number" min="0" max="2.5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
-                                <td class="calc-cell calc-total-hw">0</td>
+                                <td class="calc-cell calc-total-hw"></td>
                                 <td><input type="number" min="0" max="5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
                                 <td><input type="number" min="0" max="5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
                                 <td><input type="number" min="0" max="5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
                                 <td><input type="number" min="0" max="5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
-                                <td class="calc-cell calc-total-assessments">0</td>
+                                <td class="calc-cell calc-total-assessments"></td>
                                 <td><input type="number" min="0" max="15" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
                             </tr>`;
                         }
@@ -1215,13 +1282,14 @@
 
         function exportExcel() {
             const wb = XLSX.utils.book_new();
+            const selectedClass = document.querySelector('.header-class-name').value;
 
             for (let tabIndex = 0; tabIndex <= 2; tabIndex++) {
                 const tabContent = document.getElementById(`tab-${tabIndex}`);
                 if (!tabContent) continue;
                 
-                const classNameInput = tabContent.querySelector('.header-class-name');
-                const classNameVal = classNameInput && classNameInput.value.trim() ? classNameInput.value.trim() : `النموذج_${tabIndex + 1}`;
+                let baseSheetName = tabIndex === 0 ? "النموذج_الأول" : (tabIndex === 1 ? "اكتوبر" : "نوفمبر");
+                let sheetName = `${baseSheetName}_${selectedClass}`;
 
                 const rows = tabContent.querySelectorAll('tbody tr');
                 const data = [];
@@ -1246,10 +1314,10 @@
                 });
 
                 const ws = XLSX.utils.aoa_to_sheet(data);
-                XLSX.utils.book_append_sheet(wb, ws, classNameVal);
+                XLSX.utils.book_append_sheet(wb, ws, sheetName);
             }
 
-            XLSX.writeFile(wb, `كشوف_درجات_اللغة_الإنجليزية_الشاملة.xlsx`);
+            XLSX.writeFile(wb, `كشوف_درجات_${selectedClass}.xlsx`);
         }
 
         function importExcel(event) {
@@ -1281,7 +1349,6 @@
                         for (let j = 2; j < excelRow.length && (j - 2) < inputs.length; j++) {
                             if (inputs[j - 1]) {
                                 inputs[j - 1].value = excelRow[j] !== undefined ? excelRow[j] : '';
-                                inputs[j - 1].dispatchEvent(new Event('input'));
                             }
                         }
                     }
