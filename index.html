@@ -225,6 +225,33 @@
             box-shadow: 0 0 5px rgba(2, 132, 199, 0.3);
         }
 
+        /* Container for date picker without year display */
+        .date-picker-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .date-picker-wrapper input[type="date"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .date-display {
+            display: block;
+            width: 100%;
+            font-size: 10px;
+            font-weight: bold;
+            color: #0369a1;
+            text-align: center;
+            pointer-events: none;
+        }
+
         /* Print Page Controls Bar */
         .print-controls-bar {
             display: flex;
@@ -299,16 +326,6 @@
             color: #0f172a;
             font-weight: bold;
             font-size: 11px;
-        }
-
-        th input[type="date"] {
-            border: 1px solid #0284c7;
-            border-radius: 4px;
-            font-size: 9px;
-            width: 100%;
-            background: #fff;
-            padding: 1px;
-            text-align: center;
         }
 
         tr:nth-child(even) {
@@ -481,10 +498,10 @@
 
         <div class="action-row-top">
             <input type="file" id="excel-file-0" style="display:none" accept=".xlsx, .xls" onchange="importExcel(event)">
-            <button class="btn-action btn-import" onclick="document.getElementById('excel-file-0').click()">استيراد اكسل</button>
-            <button class="btn-action btn-export" onclick="exportExcel()">تصدير اكسل</button>
-            <button class="btn-action btn-gsheet" onclick="saveToGoogleSheet()">حفظ في جوجل شيت</button>
-            <button class="btn-action btn-gsheet" style="background: linear-gradient(135deg, #0d9488, #0f766e);" onclick="loadFromGoogleSheet()">استعادة من جوجل شيت</button>
+            <button class="btn-action btn-import" id="btn-act-import" onclick="document.getElementById('excel-file-0').click()">استيراد اكسل</button>
+            <button class="btn-action btn-export" id="btn-act-export" onclick="exportExcel()">تصدير اكسل</button>
+            <button class="btn-action btn-gsheet" id="btn-act-save" onclick="saveToGoogleSheet()">حفظ في جوجل شيت</button>
+            <button class="btn-action btn-gsheet" id="btn-act-load" style="background: linear-gradient(135deg, #0d9488, #0f766e);" onclick="loadFromGoogleSheet()">استعادة من جوجل شيت</button>
             <a href="https://docs.google.com/spreadsheets/d/18YCsXBDWYN_-dExi43s5_88yMJannOrbYC2DDaYnCmU/edit?usp=sharing" target="_blank" class="btn-action btn-gsheet">فتح الشيت</a>
             <button class="btn-action btn-print" onclick="window.print()">طباعة الكشوف</button>
         </div>
@@ -499,7 +516,7 @@
     <!-- Main Container -->
     <div class="main-wrapper" id="mainWrapper">
 
-        <!-- TAB 0: Portrait First Model (يحتوي حكراً على القائمة المنسدلة للفصل) -->
+        <!-- TAB 0: Portrait First Model (النموذج الأساسي الوحيد لتغيير الخيارات والإدخال) -->
         <div class="tab-content active" id="tab-0" data-tab="0">
             <div class="sheet-header">
                 <div class="header-row">
@@ -523,7 +540,7 @@
                     </div>
                     <div class="header-item">
                         <label>الفصل الدراسي:</label>
-                        <select class="header-term" onchange="syncTermSelectors(this)">
+                        <select class="header-term" id="main-term-selector" onchange="syncTermSelectors(this)">
                             <option value="الاول" selected>الاول</option>
                             <option value="الثاني">الثاني</option>
                         </select>
@@ -549,23 +566,23 @@
             </div>
         </div>
 
-        <!-- TAB 1: Landscape Second Model - Month 1 -->
+        <!-- TAB 1: Landscape Second Model - Month 1 (للعرض والطباعة فقط) -->
         <div class="tab-content" id="tab-1" data-tab="1">
             <div class="sheet-header">
                 <div class="header-row">
                     <div class="header-item" style="flex: 2;">
                         <label>الإدارة والمدرسة:</label>
-                        <input type="text" class="header-admin-school" value="إدارة شرق كفر الشيخ التعليمية - مدرسة الشهيد نجيب محي الشناوي للتعليم الأساسي بدقميرة">
+                        <input type="text" class="header-admin-school" value="إدارة شرق كفر الشيخ التعليمية - مدرسة الشهيد نجيب محي الشناوي للتعليم الأساسي بدقميرة" readonly>
                     </div>
                     <div class="header-item">
                         <label>المعلم:</label>
-                        <input type="text" class="header-teacher" value="مازن فوزي محمد على بدوي">
+                        <input type="text" class="header-teacher" value="مازن فوزي محمد على بدوي" readonly>
                     </div>
                 </div>
                 <div class="header-row">
                     <div class="header-item">
                         <label>المادة:</label>
-                        <input type="text" class="header-subject" value="لغة انجليزية">
+                        <input type="text" class="header-subject" value="لغة انجليزية" readonly>
                     </div>
                     <div class="header-item">
                         <label>العام الدراسي:</label>
@@ -573,10 +590,7 @@
                     </div>
                     <div class="header-item">
                         <label>الفصل الدراسي:</label>
-                        <select class="header-term" onchange="syncTermSelectors(this)">
-                            <option value="الاول" selected>الاول</option>
-                            <option value="الثاني">الثاني</option>
-                        </select>
+                        <input type="text" class="static-header-val term-display-val" value="الاول" readonly style="background: #e0f2fe; text-align: center;">
                     </div>
                     <div class="header-item">
                         <label>الشهر:</label>
@@ -600,23 +614,23 @@
             </div>
         </div>
 
-        <!-- TAB 2: Landscape Second Model - Month 2 -->
+        <!-- TAB 2: Landscape Second Model - Month 2 (للعرض والطباعة فقط) -->
         <div class="tab-content" id="tab-2" data-tab="2">
             <div class="sheet-header">
                 <div class="header-row">
                     <div class="header-item" style="flex: 2;">
                         <label>الإدارة والمدرسة:</label>
-                        <input type="text" class="header-admin-school" value="إدارة شرق كفر الشيخ التعليمية - مدرسة الشهيد نجيب محي الشناوي للتعليم الأساسي بدقميرة">
+                        <input type="text" class="header-admin-school" value="إدارة شرق كفر الشيخ التعليمية - مدرسة الشهيد نجيب محي الشناوي للتعليم الأساسي بدقميرة" readonly>
                     </div>
                     <div class="header-item">
                         <label>المعلم:</label>
-                        <input type="text" class="header-teacher" value="مازن فوزي محمد على بدوي">
+                        <input type="text" class="header-teacher" value="مازن فوزي محمد على بدوي" readonly>
                     </div>
                 </div>
                 <div class="header-row">
                     <div class="header-item">
                         <label>المادة:</label>
-                        <input type="text" class="header-subject" value="لغة انجليزية">
+                        <input type="text" class="header-subject" value="لغة انجليزية" readonly>
                     </div>
                     <div class="header-item">
                         <label>العام الدراسي:</label>
@@ -624,10 +638,7 @@
                     </div>
                     <div class="header-item">
                         <label>الفصل الدراسي:</label>
-                        <select class="header-term" onchange="syncTermSelectors(this)">
-                            <option value="الاول" selected>الاول</option>
-                            <option value="الثاني">الثاني</option>
-                        </select>
+                        <input type="text" class="static-header-val term-display-val" value="الاول" readonly style="background: #e0f2fe; text-align: center;">
                     </div>
                     <div class="header-item">
                         <label>الشهر:</label>
@@ -658,7 +669,7 @@
     <footer>All rights are reserved to Dr. Mazen Badawy – Doctor of English Teaching & Testing</footer>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZ1p14DEr-x2WGsY0fwTa0AIqWpF_W_vCnhQZzUFA9ksByAVEQE_l8JWrItIRMoXIe/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxM13lMsGMTthpi21xMMGlLW1kzAHx5_fQ-xlUHZg3vLeYZcHQUk9Sa0sA8t92X2cL-/exec";
 
         function onMainClassChange(selectedVal) {
             document.querySelectorAll('.class-display-val').forEach(el => {
@@ -669,8 +680,8 @@
 
         function syncTermSelectors(changedSelect) {
             const term = changedSelect.value;
-            document.querySelectorAll('.header-term').forEach(sel => {
-                sel.value = term;
+            document.querySelectorAll('.term-display-val').forEach(el => {
+                el.value = term;
             });
 
             const btnTab1 = document.getElementById('btn-tab-1');
@@ -695,7 +706,7 @@
         }
 
         function getDateLimitsForTab(tabIndex) {
-            const term = document.querySelector('.header-term').value;
+            const term = document.getElementById('main-term-selector').value;
             if (term === "الاول") {
                 if (tabIndex === 1) return { min: "2026-10-01", max: "2026-10-31" };
                 if (tabIndex === 2) return { min: "2026-11-01", max: "2026-11-30" };
@@ -723,7 +734,27 @@
             });
         }
 
+        function formatDayMonthDisplay(dateInput) {
+            const wrapper = dateInput.closest('.date-picker-wrapper');
+            if (!wrapper) return;
+            const displaySpan = wrapper.querySelector('.date-display');
+            if (!displaySpan) return;
+
+            if (dateInput.value) {
+                const parts = dateInput.value.split('-');
+                if (parts.length === 3) {
+                    displaySpan.innerText = `${parts[2]}/${parts[1]}`;
+                } else {
+                    displaySpan.innerText = dateInput.value;
+                }
+            } else {
+                displaySpan.innerText = wrapper.getAttribute('data-placeholder') || 'اختر تاريخ';
+            }
+        }
+
         function handleSequentialDateChange(changedInput) {
+            formatDayMonthDisplay(changedInput);
+
             const pageContainer = changedInput.closest('.print-page');
             if (!pageContainer) return;
 
@@ -737,6 +768,7 @@
                         dateInputs[i].min = selectedDate;
                         if (dateInputs[i].value && dateInputs[i].value < selectedDate) {
                             dateInputs[i].value = selectedDate;
+                            formatDayMonthDisplay(dateInputs[i]);
                         }
                     }
                 }
@@ -759,7 +791,7 @@
         function saveToGoogleSheet() {
             const payload = { sheets: [] };
             const selectedClass = document.getElementById('main-class-selector').value.replace(/\s+/g, '_');
-            const term = document.querySelector('.header-term').value;
+            const term = document.getElementById('main-term-selector').value;
 
             for (let tabIndex = 0; tabIndex <= 2; tabIndex++) {
                 const tabContent = document.getElementById(`tab-${tabIndex}`);
@@ -861,11 +893,15 @@
                 const c = document.getElementById(`container-${t}`);
                 if(c) {
                     c.querySelectorAll('input').forEach(i => i.value = '');
+                    c.querySelectorAll('.date-display').forEach(d => {
+                        const wrapper = d.closest('.date-picker-wrapper');
+                        if(wrapper) d.innerText = wrapper.getAttribute('data-placeholder') || 'اختر تاريخ';
+                    });
                 }
             }
 
             const selectedClass = document.getElementById('main-class-selector').value.replace(/\s+/g, '_');
-            const term = document.querySelector('.header-term').value;
+            const term = document.getElementById('main-term-selector').value;
 
             data.sheets.forEach((sheetObj) => {
                 let targetTabIdx = -1;
@@ -891,6 +927,7 @@
                         const valIndex = idx + 2; 
                         if (headerRow[valIndex]) {
                             dateInput.value = headerRow[valIndex];
+                            formatDayMonthDisplay(dateInput);
                         }
                     });
                 }
@@ -1037,7 +1074,6 @@
         function calcLandscape(row) {
             const numInputs = row.querySelectorAll('input[type="number"]');
             if (numInputs.length >= 9) {
-                // ضبط درجات الواجب (أقصى درجة لطلاية الواجب الواحدة 2.5)
                 let h1 = Math.min(2.5, parseFloat(numInputs[0].value) || 0);
                 let h2 = Math.min(2.5, parseFloat(numInputs[1].value) || 0);
                 let h3 = Math.min(2.5, parseFloat(numInputs[2].value) || 0);
@@ -1047,7 +1083,6 @@
                 const totalHwCell = row.querySelector('.calc-total-hw');
                 if(totalHwCell) totalHwCell.innerText = sumHw;
 
-                // ضبط درجات التقييم (أقصى درجة لتقييم الأسبوع 5)
                 let w1 = Math.min(5, parseFloat(numInputs[4].value) || 0);
                 let w2 = Math.min(5, parseFloat(numInputs[5].value) || 0);
                 let w3 = Math.min(5, parseFloat(numInputs[6].value) || 0);
@@ -1057,7 +1092,6 @@
                 const totalAssCell = row.querySelector('.calc-total-assessments');
                 if(totalAssCell) totalAssCell.innerText = sumAssessments;
 
-                // اختبار الشهر (أقصى درجة 15)
                 if (numInputs[8]) {
                     if (parseFloat(numInputs[8].value) > 15) numInputs[8].value = 15;
                 }
@@ -1082,7 +1116,7 @@
                         nameInput0.value = nameInput1.value;
                     }
 
-                    // اختبار الشهرين (أقصى درجة 15 لكل اختبار)
+                    // قراءة درجة اختبار الشهر وترحيلها بدقة للنموذج الأول
                     const numInputs1 = row1.querySelectorAll('input[type="number"]');
                     let octTest = numInputs1.length > 0 ? parseFloat(numInputs1[numInputs1.length - 1].value) : '';
                     if (octTest !== '' && !isNaN(octTest)) octTest = Math.min(15, octTest);
@@ -1095,11 +1129,9 @@
                     else novTest = '';
                     cells0[3].innerText = novTest;
 
-                    // مجموع الاختبارات (الحد الأقصى 30)
                     let totalTests = (octTest !== '' || novTest !== '') ? Math.min(30, (parseFloat(octTest)||0) + (parseFloat(novTest)||0)) : '';
                     cells0[4].innerText = totalTests;
 
-                    // متوسط المواظبة (الحد الأقصى 10)
                     const att1Score = row1.querySelector('.calc-attendance-score')?.innerText;
                     const att2Score = row2.querySelector('.calc-attendance-score')?.innerText;
                     const att1 = att1Score !== undefined && att1Score !== '' ? parseFloat(att1Score) : null;
@@ -1111,7 +1143,6 @@
                     else if(att2 !== null) avgAtt = Math.min(10, att2);
                     cells0[5].innerText = avgAtt;
 
-                    // مجموع الواجب (الحد الأقصى 10)
                     const hw1Text = row1.querySelector('.calc-total-hw')?.innerText;
                     const hw2Text = row2.querySelector('.calc-total-hw')?.innerText;
                     const hw1 = hw1Text !== undefined && hw1Text !== '' ? parseFloat(hw1Text) : null;
@@ -1122,7 +1153,6 @@
                     else if(hw2 !== null) avgHw10 = Math.min(10, hw2);
                     cells0[6].innerText = avgHw10;
 
-                    // متوسط التقييمات (الحد الأقصى 20)
                     const ass1Text = row1.querySelector('.calc-total-assessments')?.innerText;
                     const ass2Text = row2.querySelector('.calc-total-assessments')?.innerText;
                     const ass1 = ass1Text !== undefined && ass1Text !== '' ? parseFloat(ass1Text) : null;
@@ -1133,7 +1163,6 @@
                     else if(ass2 !== null) avgAss = Math.min(20, ass2);
                     cells0[7].innerText = avgAss;
 
-                    // المجموع النهائي (الحد الأقصى 70)
                     let grandTotal = '';
                     if (totalTests !== '' || avgAtt !== '' || avgHw10 !== '' || avgAss !== '') {
                         grandTotal = (parseFloat(totalTests)||0) + (parseFloat(avgAtt)||0) + (parseFloat(avgHw10)||0) + (parseFloat(avgAss)||0);
@@ -1194,21 +1223,21 @@
                                 <th></th>
                             </tr>`;
                     } else {
-                        let dateHeaders1 = '';
-                        let dateHeaders2 = '';
-                        for(let j=1; j<=6; j++) {
-                            dateHeaders1 += `<th><input type="date" class="absence-date-picker" onchange="handleSequentialDateChange(this)" title="يوم فعلي ${j}"></th>`;
-                        }
-                        for(let j=7; j<=12; j++) {
-                            dateHeaders2 += `<th><input type="date" class="absence-date-picker" onchange="handleSequentialDateChange(this)" title="يوم فعلي ${j}"></th>`;
+                        let dateHeaders = '';
+                        for(let j=1; j<=12; j++) {
+                            dateHeaders += `<th>
+                                <div class="date-picker-wrapper" data-placeholder="يوم ${j}">
+                                    <span class="date-display">يوم ${j}</span>
+                                    <input type="date" class="absence-date-picker" onchange="handleSequentialDateChange(this)" title="يوم فعلي ${j}">
+                                </div>
+                            </th>`;
                         }
 
                         tableHTML += `
                             <tr>
                                 <th rowspan="2">م</th>
                                 <th rowspan="2" style="width: 18%;">اسم الطالب</th>
-                                <th colspan="6">غياب الشهر (الجزء 1)</th>
-                                <th colspan="6">غياب الشهر (الجزء 2)</th>
+                                <th colspan="12">غياب الشهر</th>
                                 <th rowspan="2">مواظبة وسلوك<br>١٠</th>
                                 <th colspan="4">كراسة الواجب<br>٢.٥</th>
                                 <th rowspan="2">مجموع الواجب<br>١٠</th>
@@ -1217,8 +1246,7 @@
                                 <th rowspan="2">اختبار الشهر<br>١٥</th>
                             </tr>
                             <tr>
-                                ${dateHeaders1}
-                                ${dateHeaders2}
+                                ${dateHeaders}
                                 <th>الأول</th><th>الثاني</th><th>الثالث</th><th>الرابع</th>
                                 <th>الأول</th><th>الثاني</th><th>الثالث</th><th>الرابع</th>
                             </tr>`;
@@ -1388,7 +1416,7 @@
         function exportExcel() {
             const wb = XLSX.utils.book_new();
             const selectedClass = document.getElementById('main-class-selector').value;
-            const term = document.querySelector('.header-term').value;
+            const term = document.getElementById('main-term-selector').value;
 
             for (let tabIndex = 0; tabIndex <= 2; tabIndex++) {
                 const tabContent = document.getElementById(`tab-${tabIndex}`);
@@ -1451,7 +1479,10 @@
                     if (json.length > 0 && (sIdx === 1 || sIdx === 2)) {
                         const dateInputs = tabContent.querySelectorAll('thead input[type="date"]');
                         dateInputs.forEach((dateInput, idx) => {
-                            if (json[0][idx + 2]) dateInput.value = json[0][idx + 2];
+                            if (json[0][idx + 2]) {
+                                dateInput.value = json[0][idx + 2];
+                                formatDayMonthDisplay(dateInput);
+                            }
                         });
                     }
 
@@ -1491,6 +1522,18 @@
 
             if(tabs[index]) tabs[index].classList.add('active');
             if(buttons[index]) buttons[index].classList.add('active');
+
+            // إخفاء أزرار الاستيراد/التصدير/الحفظ في التبويبات الثانوية لجعلها للعرض والطباعة فقط
+            const isTab0 = (index === 0);
+            const importBtn = document.getElementById('btn-act-import');
+            const exportBtn = document.getElementById('btn-act-export');
+            const saveBtn = document.getElementById('btn-act-save');
+            const loadBtn = document.getElementById('btn-act-load');
+
+            if(importBtn) importBtn.style.display = isTab0 ? 'inline-flex' : 'none';
+            if(exportBtn) exportBtn.style.display = isTab0 ? 'inline-flex' : 'none';
+            if(saveBtn) saveBtn.style.display = isTab0 ? 'inline-flex' : 'none';
+            if(loadBtn) loadBtn.style.display = isTab0 ? 'inline-flex' : 'none';
         }
 
         let currentZoom = 1;
