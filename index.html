@@ -474,9 +474,9 @@
     <!-- Top Navigation Bar & Tools -->
     <div class="top-bar" id="topBar">
         <div class="tabs-container">
-            <button class="tab-btn active" onclick="switchTab(0)">النموذج الأول</button>
-            <button class="tab-btn" onclick="switchTab(1)">شهر أكتوبر</button>
-            <button class="tab-btn" onclick="switchTab(2)">شهر نوفمبر</button>
+            <button class="tab-btn active" id="btn-tab-0" onclick="switchTab(0)">النموذج الأول</button>
+            <button class="tab-btn" id="btn-tab-1" onclick="switchTab(1)">شهر أكتوبر</button>
+            <button class="tab-btn" id="btn-tab-2" onclick="switchTab(2)">شهر نوفمبر</button>
         </div>
 
         <div class="action-row-top">
@@ -519,13 +519,13 @@
                     </div>
                     <div class="header-item">
                         <label>العام الدراسي:</label>
-                        <input type="text" class="header-year" value="2026-2027">
+                        <input type="text" class="header-year" id="header-year-0" value="2026-2027" readonly>
                     </div>
                     <div class="header-item">
                         <label>الفصل الدراسي:</label>
-                        <select class="header-term">
-                            <option>الاول</option>
-                            <option>الثاني</option>
+                        <select class="header-term" onchange="syncTermSelectors(this)">
+                            <option value="الاول" selected>الاول</option>
+                            <option value="الثاني">الثاني</option>
                         </select>
                     </div>
                     <div class="header-item">
@@ -549,7 +549,7 @@
             </div>
         </div>
 
-        <!-- TAB 1: Landscape Second Model - October -->
+        <!-- TAB 1: Landscape Second Model - Month 1 -->
         <div class="tab-content" id="tab-1" data-tab="1">
             <div class="sheet-header">
                 <div class="header-row">
@@ -569,18 +569,18 @@
                     </div>
                     <div class="header-item">
                         <label>العام الدراسي:</label>
-                        <input type="text" class="header-year" value="2026-2027">
+                        <input type="text" class="header-year" id="header-year-1" value="2026-2027" readonly>
                     </div>
                     <div class="header-item">
                         <label>الفصل الدراسي:</label>
-                        <select class="header-term">
-                            <option>الاول</option>
-                            <option>الثاني</option>
+                        <select class="header-term" onchange="syncTermSelectors(this)">
+                            <option value="الاول" selected>الاول</option>
+                            <option value="الثاني">الثاني</option>
                         </select>
                     </div>
                     <div class="header-item">
                         <label>الشهر:</label>
-                        <input type="text" class="static-header-val" value="أكتوبر" readonly style="background: #e0f2fe; text-align: center;">
+                        <input type="text" class="static-header-val month-label-1" value="أكتوبر" readonly style="background: #e0f2fe; text-align: center;">
                     </div>
                     <div class="header-item">
                         <label>فصل:</label>
@@ -603,7 +603,7 @@
             </div>
         </div>
 
-        <!-- TAB 2: Landscape Second Model - November -->
+        <!-- TAB 2: Landscape Second Model - Month 2 -->
         <div class="tab-content" id="tab-2" data-tab="2">
             <div class="sheet-header">
                 <div class="header-row">
@@ -623,18 +623,18 @@
                     </div>
                     <div class="header-item">
                         <label>العام الدراسي:</label>
-                        <input type="text" class="header-year" value="2026-2027">
+                        <input type="text" class="header-year" id="header-year-2" value="2026-2027" readonly>
                     </div>
                     <div class="header-item">
                         <label>الفصل الدراسي:</label>
-                        <select class="header-term">
-                            <option>الاول</option>
-                            <option>الثاني</option>
+                        <select class="header-term" onchange="syncTermSelectors(this)">
+                            <option value="الاول" selected>الاول</option>
+                            <option value="الثاني">الثاني</option>
                         </select>
                     </div>
                     <div class="header-item">
                         <label>الشهر:</label>
-                        <input type="text" class="static-header-val" value="نوفمبر" readonly style="background: #e0f2fe; text-align: center;">
+                        <input type="text" class="static-header-val month-label-2" value="نوفمبر" readonly style="background: #e0f2fe; text-align: center;">
                     </div>
                     <div class="header-item">
                         <label>فصل:</label>
@@ -664,7 +664,7 @@
     <footer>All rights are reserved to Dr. Mazen Badawy – Doctor of English Teaching & Testing</footer>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxM13lMsGMTthpi21xMMGlLW1kzAHx5_fQ-xlUHZg3vLeYZcHQUk9Sa0sA8t92X2cL-/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZ1p14DEr-x2WGsY0fwTa0AIqWpF_W_vCnhQZzUFA9ksByAVEQE_l8JWrItIRMoXIe/exec";
 
         function syncClassSelectors(changedSelect) {
             const val = changedSelect.value;
@@ -674,21 +674,106 @@
             loadFromGoogleSheet();
         }
 
+        function syncTermSelectors(changedSelect) {
+            const term = changedSelect.value;
+            document.querySelectorAll('.header-term').forEach(sel => {
+                sel.value = term;
+            });
+
+            // تحديث عناوين التبويبات والشهور والحدود الأدنى والأقصى للتواريخ
+            const btnTab1 = document.getElementById('btn-tab-1');
+            const btnTab2 = document.getElementById('btn-tab-2');
+            const monthLabel1 = document.querySelector('.month-label-1');
+            const monthLabel2 = document.querySelector('.month-label-2');
+
+            if (term === "الاول") {
+                if(btnTab1) btnTab1.innerText = "شهر أكتوبر";
+                if(btnTab2) btnTab2.innerText = "شهر نوفمبر";
+                if(monthLabel1) monthLabel1.value = "أكتوبر";
+                if(monthLabel2) monthLabel2.value = "نوفمبر";
+            } else {
+                if(btnTab1) btnTab1.innerText = "شهر فبراير";
+                if(btnTab2) btnTab2.innerText = "شهر مارس";
+                if(monthLabel1) monthLabel1.value = "فبراير";
+                if(monthLabel2) monthLabel2.value = "مارس";
+            }
+
+            // إعادة ضبط نطاقات التواريخ وفقاً للفصل الدراسي المختار
+            updateDatePickersLimits();
+            loadFromGoogleSheet();
+        }
+
+        function getDateLimitsForTab(tabIndex) {
+            const term = document.querySelector('.header-term').value;
+            if (term === "الاول") {
+                // الترم الأول 2026: أكتوبر لـ Tab 1 ونوفمبر لـ Tab 2
+                if (tabIndex === 1) return { min: "2026-10-01", max: "2026-10-31" };
+                if (tabIndex === 2) return { min: "2026-11-01", max: "2026-11-30" };
+            } else {
+                // الترم الثاني 2027: فبراير لـ Tab 1 ومارس لـ Tab 2
+                if (tabIndex === 1) return { min: "2027-02-01", max: "2027-02-28" };
+                if (tabIndex === 2) return { min: "2027-03-01", max: "2027-03-31" };
+            }
+            return { min: "", max: "" };
+        }
+
+        function updateDatePickersLimits() {
+            [1, 2].forEach(tabIdx => {
+                const limits = getDateLimitsForTab(tabIdx);
+                const tabContent = document.getElementById(`tab-${tabIdx}`);
+                if (!tabContent) return;
+
+                const dateInputs = tabContent.querySelectorAll('thead input[type="date"]');
+                dateInputs.forEach((input, idx) => {
+                    input.min = limits.min;
+                    input.max = limits.max;
+                    
+                    // تحكم ديناميكي تعاقبي: الخانة التي لها قيمة تُحدد الحد الأدنى للخانة التالية
+                    if (idx > 0 && dateInputs[idx - 1].value) {
+                        input.min = dateInputs[idx - 1].value;
+                    }
+                });
+            });
+        }
+
+        function handleSequentialDateChange(changedInput) {
+            const pageContainer = changedInput.closest('.print-page');
+            if (!pageContainer) return;
+
+            const dateInputs = Array.from(pageContainer.querySelectorAll('.absence-date-picker'));
+            const changedIndex = dateInputs.indexOf(changedInput);
+
+            if (changedIndex !== -1) {
+                const selectedDate = changedInput.value;
+
+                // تحديث الحد الأدنى لجميع التواريخ التالية لتكون متعاقبة
+                for (let i = changedIndex + 1; i < dateInputs.length; i++) {
+                    if (selectedDate) {
+                        dateInputs[i].min = selectedDate;
+                        if (dateInputs[i].value && dateInputs[i].value < selectedDate) {
+                            dateInputs[i].value = selectedDate;
+                        }
+                    }
+                }
+            }
+            updateAllAbsenceScoresInPage(changedInput);
+        }
+
         function saveToGoogleSheet() {
             const payload = { sheets: [] };
             const selectedClass = document.querySelector('.header-class-name').value.replace(/\s+/g, '_');
+            const term = document.querySelector('.header-term').value;
 
             for (let tabIndex = 0; tabIndex <= 2; tabIndex++) {
                 const tabContent = document.getElementById(`tab-${tabIndex}`);
                 if (!tabContent) continue;
 
-                let baseSheetName = tabIndex === 0 ? "النموذج_الأول" : (tabIndex === 1 ? "اكتوبر" : "نوفمبر");
+                let baseSheetName = tabIndex === 0 ? "النموذج_الأول" : (tabIndex === 1 ? (term === "الاول" ? "اكتوبر" : "فبراير") : (term === "الاول" ? "نوفمبر" : "مارس"));
                 let sheetName = `${baseSheetName}_${selectedClass}`;
 
                 const rows = tabContent.querySelectorAll('tbody tr');
                 const data = [];
 
-                // حفظ رأس الجدول متضمناً قيم التواريخ المحددة بالأعلى
                 const headers = [];
                 const thElements = tabContent.querySelectorAll('thead tr:last-child th');
                 if (thElements.length > 0) {
@@ -745,7 +830,7 @@
                 body: formData.toString()
             })
             .then(() => {
-                alert("تم حفظ كافة الأسماء والدرجات وتصديرها إلى جوجل شيت بنجاح!");
+                alert("تم حفظ كافة الأسماء والدرجات والتواريخ وتصديرها إلى جوجل شيت بنجاح!");
             })
             .catch(error => {
                 console.error("Error:", error);
@@ -783,12 +868,16 @@
             }
 
             const selectedClass = document.querySelector('.header-class-name').value.replace(/\s+/g, '_');
+            const term = document.querySelector('.header-term').value;
 
             data.sheets.forEach((sheetObj) => {
                 let targetTabIdx = -1;
+                const m1 = term === "الاول" ? "اكتوبر" : "فبراير";
+                const m2 = term === "الاول" ? "نوفمبر" : "مارس";
+
                 if (sheetObj.name.includes(`النموذج_الأول_${selectedClass}`)) targetTabIdx = 0;
-                else if (sheetObj.name.includes(`اكتوبر_${selectedClass}`)) targetTabIdx = 1;
-                else if (sheetObj.name.includes(`نوفمبر_${selectedClass}`)) targetTabIdx = 2;
+                else if (sheetObj.name.includes(`${m1}_${selectedClass}`)) targetTabIdx = 1;
+                else if (sheetObj.name.includes(`${m2}_${selectedClass}`)) targetTabIdx = 2;
 
                 if (targetTabIdx === -1) return;
 
@@ -834,6 +923,7 @@
                 }
             });
 
+            updateDatePickersLimits();
             updateTab0DynamicAverages();
         }
 
@@ -923,7 +1013,6 @@
             const pageContainer = row.closest('.print-page');
             if (!pageContainer) return;
             
-            // احتساب عدد الأيام الفعالية من خلال تاريخ Datepicker المكتمل
             const absenceDateInputs = pageContainer.querySelectorAll('.absence-date-picker');
             let activeDaysCount = 0;
             absenceDateInputs.forEach(dateInput => {
@@ -1108,10 +1197,10 @@
                         let dateHeaders1 = '';
                         let dateHeaders2 = '';
                         for(let j=1; j<=6; j++) {
-                            dateHeaders1 += `<th><input type="date" class="absence-date-picker" onchange="updateAllAbsenceScoresInPage(this)" title="يوم فعلي ${j}"></th>`;
+                            dateHeaders1 += `<th><input type="date" class="absence-date-picker" onchange="handleSequentialDateChange(this)" title="يوم فعلي ${j}"></th>`;
                         }
                         for(let j=7; j<=12; j++) {
-                            dateHeaders2 += `<th><input type="date" class="absence-date-picker" onchange="updateAllAbsenceScoresInPage(this)" title="يوم فعلي ${j}"></th>`;
+                            dateHeaders2 += `<th><input type="date" class="absence-date-picker" onchange="handleSequentialDateChange(this)" title="يوم فعلي ${j}"></th>`;
                         }
 
                         tableHTML += `
@@ -1202,6 +1291,7 @@
             document.querySelectorAll('table input').forEach(input => {
                 input.addEventListener('keydown', handleArrowNavigation);
             });
+            updateDatePickersLimits();
             updateTab0DynamicAverages();
         }
 
@@ -1298,12 +1388,13 @@
         function exportExcel() {
             const wb = XLSX.utils.book_new();
             const selectedClass = document.querySelector('.header-class-name').value;
+            const term = document.querySelector('.header-term').value;
 
             for (let tabIndex = 0; tabIndex <= 2; tabIndex++) {
                 const tabContent = document.getElementById(`tab-${tabIndex}`);
                 if (!tabContent) continue;
                 
-                let baseSheetName = tabIndex === 0 ? "النموذج_الأول" : (tabIndex === 1 ? "اكتوبر" : "نوفمبر");
+                let baseSheetName = tabIndex === 0 ? "النموذج_الأول" : (tabIndex === 1 ? (term === "الاول" ? "اكتوبر" : "فبراير") : (term === "الاول" ? "نوفمبر" : "مارس"));
                 let sheetName = `${baseSheetName}_${selectedClass}`;
 
                 const rows = tabContent.querySelectorAll('tbody tr');
@@ -1357,7 +1448,6 @@
                     const tabContent = document.getElementById(`tab-${sIdx}`);
                     if (!tabContent) return;
                     
-                    // استعادة التواريخ من السطر الأول
                     if (json.length > 0 && (sIdx === 1 || sIdx === 2)) {
                         const dateInputs = tabContent.querySelectorAll('thead input[type="date"]');
                         dateInputs.forEach((dateInput, idx) => {
@@ -1382,6 +1472,7 @@
                     }
                 });
 
+                updateDatePickersLimits();
                 updateTab0DynamicAverages();
                 alert('تم استيراد كافة البيانات بنجاح واستعادتها كاملة!');
                 event.target.value = '';
