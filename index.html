@@ -229,7 +229,7 @@
             border: 2px solid #0284c7;
             background: #ffffff;
             margin-bottom: 20px;
-            padding: 12px;
+            padding: 10px;
             border-radius: 8px;
             position: relative;
             box-shadow: 0 4px 15px rgba(2, 132, 199, 0.1);
@@ -242,8 +242,8 @@
             justify-content: space-between;
             font-size: 11px;
             font-weight: bold;
-            margin-top: 8px;
-            padding-top: 5px;
+            margin-top: 6px;
+            padding-top: 4px;
             border-top: 1px solid #bae6fd;
             color: #0369a1;
         }
@@ -257,9 +257,9 @@
 
         th, td {
             border: 1.5px solid #0284c7;
-            padding: 3px 2px;
+            padding: 2px 1px;
             vertical-align: middle;
-            height: 26px;
+            height: 24px;
         }
 
         th {
@@ -294,9 +294,9 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 8px;
             text-align: center;
-            padding-top: 8px;
+            padding-top: 6px;
             border-top: 1.5px dashed #0284c7;
             page-break-inside: avoid;
             break-inside: avoid;
@@ -304,10 +304,10 @@
 
         .signature-box {
             font-weight: bold;
-            font-size: 12px;
+            font-size: 11px;
             color: #0f172a;
             background: #f8fafc;
-            padding: 6px;
+            padding: 4px;
             border-radius: 6px;
             border: 1px solid #7dd3fc;
         }
@@ -420,15 +420,20 @@
                 page-break-inside: avoid !important;
                 break-after: page !important;
                 break-inside: avoid !important;
-                border: 2px solid #0284c7 !important;
-                margin: 0 0 5mm 0 !important;
-                padding: 6px !important;
+                border: 1.5px solid #0284c7 !important;
+                margin: 0 0 2mm 0 !important;
+                padding: 4px !important;
                 box-shadow: none !important;
                 height: auto !important;
-                max-height: 96vh !important;
+                max-height: 95vh !important;
                 overflow: hidden !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+            }
+            th, td {
+                padding: 1px !important;
+                height: 20px !important;
+                font-size: 10px !important;
             }
             th {
                 background: #bae6fd !important;
@@ -446,10 +451,10 @@
                 print-color-adjust: exact;
             }
             #tab-0 {
-                @page { size: portrait; margin: 4mm; }
+                @page { size: portrait; margin: 3mm; }
             }
             #tab-1, #tab-2 {
-                @page { size: landscape; margin: 4mm; }
+                @page { size: landscape; margin: 3mm; }
             }
         }
     </style>
@@ -519,6 +524,7 @@
                 <!-- Pages generated via JS -->
             </div>
 
+            <!-- أزرار الحفظ والاستعادة وطباعة وتصدير اكسل أصبحت في النموذج الأول فقط كما طلبتم -->
             <div class="action-row">
                 <input type="file" id="excel-file-0" style="display:none" accept=".xlsx, .xls" onchange="importExcel(event)">
                 <button class="btn-action btn-import" onclick="document.getElementById('excel-file-0').click()">استيراد اكسل</button>
@@ -526,7 +532,7 @@
                 <button class="btn-action btn-gsheet" onclick="saveToGoogleSheet()">حفظ في جوجل شيت</button>
                 <button class="btn-action btn-gsheet" style="background: linear-gradient(135deg, #0d9488, #0f766e);" onclick="loadFromGoogleSheet()">استعادة من جوجل شيت</button>
                 <a href="https://docs.google.com/spreadsheets/d/18YCsXBDWYN_-dExi43s5_88yMJannOrbYC2DDaYnCmU/edit?usp=sharing" target="_blank" class="btn-action btn-gsheet">فتح جوجل شيت</a>
-                <button class="btn-action btn-print" onclick="window.print()">طباعة النموذج الأول (Portrait)</button>
+                <button class="btn-action btn-print" onclick="window.print()">طباعة كشوف الدرجات</button>
             </div>
         </div>
 
@@ -582,16 +588,6 @@
             <div class="table-container" id="container-1">
                 <!-- Pages generated via JS -->
             </div>
-
-            <div class="action-row">
-                <input type="file" id="excel-file-1" style="display:none" accept=".xlsx, .xls" onchange="importExcel(event)">
-                <button class="btn-action btn-import" onclick="document.getElementById('excel-file-1').click()">استيراد اكسل</button>
-                <button class="btn-action btn-export" onclick="exportExcel()">تصدير اكسل</button>
-                <button class="btn-action btn-gsheet" onclick="saveToGoogleSheet()">حفظ في جوجل شيت</button>
-                <button class="btn-action btn-gsheet" style="background: linear-gradient(135deg, #0d9488, #0f766e);" onclick="loadFromGoogleSheet()">استعادة من جوجل شيت</button>
-                <a href="https://docs.google.com/spreadsheets/d/18YCsXBDWYN_-dExi43s5_88yMJannOrbYC2DDaYnCmU/edit?usp=sharing" target="_blank" class="btn-action btn-gsheet">فتح جوجل شيت</a>
-                <button class="btn-action btn-print" onclick="window.print()">طباعة التكرار الأول (Landscape)</button>
-            </div>
         </div>
 
         <!-- TAB 2: Landscape Second Model - Copy 2 (November Default) -->
@@ -646,16 +642,6 @@
             <div class="table-container" id="container-2">
                 <!-- Pages generated via JS -->
             </div>
-
-            <div class="action-row">
-                <input type="file" id="excel-file-2" style="display:none" accept=".xlsx, .xls" onchange="importExcel(event)">
-                <button class="btn-action btn-import" onclick="document.getElementById('excel-file-2').click()">استيراد اكسل</button>
-                <button class="btn-action btn-export" onclick="exportExcel()">تصدير اكسل</button>
-                <button class="btn-action btn-gsheet" onclick="saveToGoogleSheet()">حفظ في جوجل شيت</button>
-                <button class="btn-action btn-gsheet" style="background: linear-gradient(135deg, #0d9488, #0f766e);" onclick="loadFromGoogleSheet()">استعادة من جوجل شيت</button>
-                <a href="https://docs.google.com/spreadsheets/d/18YCsXBDWYN_-dExi43s5_88yMJannOrbYC2DDaYnCmU/edit?usp=sharing" target="_blank" class="btn-action btn-gsheet">فتح جوجل شيت</a>
-                <button class="btn-action btn-print" onclick="window.print()">طباعة التكرار الثاني (Landscape)</button>
-            </div>
         </div>
 
     </div>
@@ -708,9 +694,8 @@
                 });
             }
 
-            alert("جاري إرسال البيانات وحفظها في جوجل شيت...");
+            alert("جاري حفظ البيانات في جوجل شيت...");
 
-            // استخدام تقنية Form للتغلب على قيود متصفحات الويب وعقبة CORS
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = WEB_APP_URL;
@@ -726,7 +711,7 @@
             form.submit();
             document.body.removeChild(form);
 
-            alert("تم إرسال البيانات بنجاح! تفقد ملف جوجل شيت لتراها فوراً.");
+            alert("تم إرسال كافة البيانات والأسماء إلى جوجل شيت بنجاح!");
         }
 
         function loadFromGoogleSheet() {
@@ -771,9 +756,11 @@
                     });
 
                     updateTab0DynamicAverages();
+                    alert("تمت استعادة كافة البيانات والأسماء بنجاح!");
                 })
                 .catch(err => {
-                    console.log("جارٍ تهيئة البيانات:", err);
+                    console.log("خطأ في الاستعادة:", err);
+                    alert("فشل جلب البيانات من جوجل شيت.");
                 });
         }
 
@@ -1282,6 +1269,7 @@
                         const targetRow = rows[i - 1];
                         const inputs = targetRow.querySelectorAll('input');
                         
+                        `
                         if (excelRow[1] !== undefined && inputs[0]) {
                             inputs[0].value = excelRow[1];
                         }
@@ -1344,7 +1332,6 @@
                 monthSelects[0].value = 'اكتوبر';
                 monthSelects[1].value = 'نوفمبر';
             }
-            // استعادة البيانات تلقائياً وتعبئة الأسماء والدرجات فور فتح الصفحة
             loadFromGoogleSheet();
         };
     </script>
