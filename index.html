@@ -662,7 +662,6 @@
     <footer>All rights are reserved to Dr. Mazen Badawy – Doctor of English Teaching & Testing</footer>
 
     <script>
-        // رابط الأبسكريبت المربوط بجوجل شيت الخاص بك
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby6WbNCtxM_vAhiGO0D9QjbgzmJk0IKt3b5dR2dHclOiAXgIBNU1BT7woaeCT6TAgze/exec";
 
         function saveToGoogleSheet() {
@@ -725,15 +724,10 @@
         }
 
         function loadFromGoogleSheet() {
-            alert("جاري استعادة البيانات من جوجل شيت...");
-
             fetch(WEB_APP_URL)
                 .then(res => res.json())
                 .then(data => {
-                    if (!data.sheets) {
-                        alert("لم يتم العثور على بيانات.");
-                        return;
-                    }
+                    if (!data.sheets) return;
 
                     data.sheets.forEach((sheetObj, sIdx) => {
                         if (sIdx > 2) return;
@@ -753,7 +747,11 @@
                             }
                             for (let j = 2; j < excelRow.length && (j - 2) < inputs.length; j++) {
                                 if (inputs[j - 1]) {
-                                    inputs[j - 1].value = excelRow[j] !== undefined ? excelRow[j] : '';
+                                    if (inputs[j - 1].type === 'checkbox') {
+                                        inputs[j - 1].checked = (excelRow[j] === 'TRUE' || excelRow[j] === true);
+                                    } else {
+                                        inputs[j - 1].value = excelRow[j] !== undefined ? excelRow[j] : '';
+                                    }
                                     inputs[j - 1].dispatchEvent(new Event('input'));
                                 }
                             }
@@ -761,11 +759,9 @@
                     });
 
                     updateTab0DynamicAverages();
-                    alert("تمت استعادة كافة البيانات من جوجل شيت بنجاح!");
                 })
                 .catch(err => {
-                    console.error(err);
-                    alert("حدث خطأ أثناء استعادة البيانات. تأكد من إعداد النشر بشكل صحيح في Apps Script.");
+                    console.error("فشل التحميل التلقائي:", err);
                 });
         }
 
@@ -1336,6 +1332,8 @@
                 monthSelects[0].value = 'اكتوبر';
                 monthSelects[1].value = 'نوفمبر';
             }
+            // الوضع الافتراضي عند فتح الصفحة هو استعادة البيانات تلقائياً من جوجل شيت
+            loadFromGoogleSheet();
         };
     </script>
 </body>
