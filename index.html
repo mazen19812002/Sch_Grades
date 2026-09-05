@@ -207,7 +207,7 @@
             white-space: nowrap;
         }
 
-        .header-item input, .header-item select {
+        .header-item input, .header-item select, .static-header-val {
             width: 100%;
             background: rgba(255, 255, 255, 0.95);
             border: 1px solid #0284c7;
@@ -299,6 +299,16 @@
             color: #0f172a;
             font-weight: bold;
             font-size: 11px;
+        }
+
+        th input[type="date"] {
+            border: 1px solid #0284c7;
+            border-radius: 4px;
+            font-size: 9px;
+            width: 100%;
+            background: #fff;
+            padding: 1px;
+            text-align: center;
         }
 
         tr:nth-child(even) {
@@ -464,9 +474,9 @@
     <!-- Top Navigation Bar & Tools -->
     <div class="top-bar" id="topBar">
         <div class="tabs-container">
-            <button class="tab-btn active" onclick="switchTab(0)">النموذج الأول (طولي)</button>
-            <button class="tab-btn" onclick="switchTab(1)">شهر أكتوبر (عرضي)</button>
-            <button class="tab-btn" onclick="switchTab(2)">شهر نوفمبر (عرضي)</button>
+            <button class="tab-btn active" onclick="switchTab(0)">النموذج الأول</button>
+            <button class="tab-btn" onclick="switchTab(1)">شهر أكتوبر</button>
+            <button class="tab-btn" onclick="switchTab(2)">شهر نوفمبر</button>
         </div>
 
         <div class="action-row-top">
@@ -570,10 +580,7 @@
                     </div>
                     <div class="header-item">
                         <label>الشهر:</label>
-                        <select class="month-select" onchange="syncMonthSelectors(this)">
-                            <option selected>اكتوبر</option>
-                            <option>نوفمبر</option>
-                        </select>
+                        <input type="text" class="static-header-val" value="أكتوبر" readonly style="background: #e0f2fe; text-align: center;">
                     </div>
                     <div class="header-item">
                         <label>فصل:</label>
@@ -627,10 +634,7 @@
                     </div>
                     <div class="header-item">
                         <label>الشهر:</label>
-                        <select class="month-select" onchange="syncMonthSelectors(this)">
-                            <option>اكتوبر</option>
-                            <option selected>نوفمبر</option>
-                        </select>
+                        <input type="text" class="static-header-val" value="نوفمبر" readonly style="background: #e0f2fe; text-align: center;">
                     </div>
                     <div class="header-item">
                         <label>فصل:</label>
@@ -660,14 +664,13 @@
     <footer>All rights are reserved to Dr. Mazen Badawy – Doctor of English Teaching & Testing</footer>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxM13lMsGMTthpi21xMMGlLW1kzAHx5_fQ-xlUHZg3vLeYZcHQUk9Sa0sA8t92X2cL-/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZ1p14DEr-x2WGsY0fwTa0AIqWpF_W_vCnhQZzUFA9ksByAVEQE_l8JWrItIRMoXIe/exec";
 
         function syncClassSelectors(changedSelect) {
             const val = changedSelect.value;
             document.querySelectorAll('.header-class-name').forEach(sel => {
                 sel.value = val;
             });
-            // استرجاع بيانات الفصل المحدد تلقائياً
             loadFromGoogleSheet();
         }
 
@@ -685,12 +688,27 @@
                 const rows = tabContent.querySelectorAll('tbody tr');
                 const data = [];
 
+                // حفظ رأس الجدول متضمناً قيم التواريخ المحددة بالأعلى
                 const headers = [];
                 const thElements = tabContent.querySelectorAll('thead tr:last-child th');
                 if (thElements.length > 0) {
-                    thElements.forEach(th => headers.push(th.innerText.replace(/\n/g, ' ')));
+                    thElements.forEach(th => {
+                        const dateInput = th.querySelector('input[type="date"]');
+                        if (dateInput) {
+                            headers.push(dateInput.value);
+                        } else {
+                            headers.push(th.innerText.replace(/\n/g, ' '));
+                        }
+                    });
                 } else {
-                    tabContent.querySelectorAll('thead tr th').forEach(th => headers.push(th.innerText.replace(/\n/g, ' ')));
+                    tabContent.querySelectorAll('thead tr th').forEach(th => {
+                        const dateInput = th.querySelector('input[type="date"]');
+                        if (dateInput) {
+                            headers.push(dateInput.value);
+                        } else {
+                            headers.push(th.innerText.replace(/\n/g, ' '));
+                        }
+                    });
                 }
                 data.push(headers);
 
@@ -699,11 +717,7 @@
                     row.querySelectorAll('td').forEach(td => {
                         const input = td.querySelector('input');
                         if (input) {
-                            if (input.type === 'checkbox') {
-                                rowData.push(input.checked ? 'TRUE' : 'FALSE');
-                            } else {
-                                rowData.push(input.value);
-                            }
+                            rowData.push(input.value);
                         } else {
                             rowData.push(td.innerText);
                         }
@@ -761,14 +775,10 @@
 
             if (!data || !data.sheets) return;
 
-            // تفريغ المدخلات الحالية قبل استعادة بيانات الفصل المختار
             for (let t = 0; t <= 2; t++) {
                 const c = document.getElementById(`container-${t}`);
                 if(c) {
-                    c.querySelectorAll('input').forEach(i => {
-                        if(i.type === 'checkbox') i.checked = false;
-                        else i.value = '';
-                    });
+                    c.querySelectorAll('input').forEach(i => i.value = '');
                 }
             }
 
@@ -785,9 +795,23 @@
                 const tabContent = document.getElementById(`tab-${targetTabIdx}`);
                 if (!tabContent) return;
 
-                const rows = tabContent.querySelectorAll('tbody tr');
                 const sheetRows = sheetObj.rows;
+                if (!sheetRows || sheetRows.length === 0) return;
 
+                // 1. استعادة تواريخ الغياب من السطر الأول (Header)
+                const headerRow = sheetRows[0];
+                if (headerRow && (targetTabIdx === 1 || targetTabIdx === 2)) {
+                    const dateInputs = tabContent.querySelectorAll('thead input[type="date"]');
+                    dateInputs.forEach((dateInput, idx) => {
+                        const valIndex = idx + 2; 
+                        if (headerRow[valIndex]) {
+                            dateInput.value = headerRow[valIndex];
+                        }
+                    });
+                }
+
+                // 2. استعادة صفوف البيانات للطلاب
+                const rows = tabContent.querySelectorAll('tbody tr');
                 for (let i = 1; i < sheetRows.length && (i - 1) < rows.length; i++) {
                     const excelRow = sheetRows[i];
                     const targetRow = rows[i - 1];
@@ -800,16 +824,12 @@
                     for (let j = 2; j < excelRow.length && (j - 2) < inputs.length; j++) {
                         const currentInput = inputs[j - 1];
                         if (currentInput) {
-                            if (currentInput.type === 'checkbox') {
-                                currentInput.checked = (excelRow[j] === 'TRUE' || excelRow[j] === true || excelRow[j] === 'true');
-                            } else {
-                                currentInput.value = (excelRow[j] !== undefined && excelRow[j] !== null) ? excelRow[j] : '';
-                            }
+                            currentInput.value = (excelRow[j] !== undefined && excelRow[j] !== null) ? excelRow[j] : '';
                         }
                     }
 
                     if (targetTabIdx === 1 || targetTabIdx === 2) {
-                        calcLandscape(targetRow);
+                        calculateAbsence(targetRow.querySelector('.absence-input'));
                     }
                 }
             });
@@ -897,22 +917,17 @@
             }
         }
 
-        function syncMonthSelectors(changedSelect) {
-            const val = changedSelect.value;
-            document.querySelectorAll('.month-select').forEach(sel => {
-                sel.value = val;
-            });
-        }
-
         function calculateAbsence(inputEl) {
+            if(!inputEl) return;
             const row = inputEl.closest('tr');
             const pageContainer = row.closest('.print-page');
             if (!pageContainer) return;
             
-            const absenceCheckboxes = pageContainer.querySelectorAll('.absence-checkbox');
+            // احتساب عدد الأيام الفعالية من خلال تاريخ Datepicker المكتمل
+            const absenceDateInputs = pageContainer.querySelectorAll('.absence-date-picker');
             let activeDaysCount = 0;
-            absenceCheckboxes.forEach(cb => {
-                if (cb.checked) activeDaysCount++;
+            absenceDateInputs.forEach(dateInput => {
+                if (dateInput.value.trim() !== '') activeDaysCount++;
             });
 
             const absenceInputs = row.querySelectorAll('.absence-input');
@@ -937,8 +952,8 @@
             calcLandscape(row);
         }
 
-        function updateAllAbsenceScoresInPage(checkboxEl) {
-            const pageContainer = checkboxEl.closest('.print-page');
+        function updateAllAbsenceScoresInPage(datePickerEl) {
+            const pageContainer = datePickerEl.closest('.print-page');
             if (!pageContainer) return;
             const rows = pageContainer.querySelectorAll('tbody tr');
             rows.forEach(row => {
@@ -1090,13 +1105,13 @@
                                 <th></th>
                             </tr>`;
                     } else {
-                        let checkboxHeaders1 = '';
-                        let checkboxHeaders2 = '';
+                        let dateHeaders1 = '';
+                        let dateHeaders2 = '';
                         for(let j=1; j<=6; j++) {
-                            checkboxHeaders1 += `<th><input type="checkbox" class="absence-checkbox" onchange="updateAllAbsenceScoresInPage(this)" title="يوم فعلي ${j}"></th>`;
+                            dateHeaders1 += `<th><input type="date" class="absence-date-picker" onchange="updateAllAbsenceScoresInPage(this)" title="يوم فعلي ${j}"></th>`;
                         }
                         for(let j=7; j<=12; j++) {
-                            checkboxHeaders2 += `<th><input type="checkbox" class="absence-checkbox" onchange="updateAllAbsenceScoresInPage(this)" title="يوم فعلي ${j}"></th>`;
+                            dateHeaders2 += `<th><input type="date" class="absence-date-picker" onchange="updateAllAbsenceScoresInPage(this)" title="يوم فعلي ${j}"></th>`;
                         }
 
                         tableHTML += `
@@ -1113,8 +1128,8 @@
                                 <th rowspan="2">اختبار الشهر<br>١٥</th>
                             </tr>
                             <tr>
-                                ${checkboxHeaders1}
-                                ${checkboxHeaders2}
+                                ${dateHeaders1}
+                                ${dateHeaders2}
                                 <th>الأول</th><th>الثاني</th><th>الثالث</th><th>الرابع</th>
                                 <th>الأول</th><th>الثاني</th><th>الثالث</th><th>الرابع</th>
                             </tr>`;
@@ -1296,7 +1311,12 @@
 
                 const headers = [];
                 tabContent.querySelectorAll('thead tr:last-child th, th').forEach(th => {
-                    headers.push(th.innerText.replace(/\n/g, ' '));
+                    const dateInput = th.querySelector('input[type="date"]');
+                    if (dateInput) {
+                        headers.push(dateInput.value);
+                    } else {
+                        headers.push(th.innerText.replace(/\n/g, ' '));
+                    }
                 });
                 data.push(headers);
 
@@ -1336,8 +1356,16 @@
 
                     const tabContent = document.getElementById(`tab-${sIdx}`);
                     if (!tabContent) return;
-                    const rows = tabContent.querySelectorAll('tbody tr');
+                    
+                    // استعادة التواريخ من السطر الأول
+                    if (json.length > 0 && (sIdx === 1 || sIdx === 2)) {
+                        const dateInputs = tabContent.querySelectorAll('thead input[type="date"]');
+                        dateInputs.forEach((dateInput, idx) => {
+                            if (json[0][idx + 2]) dateInput.value = json[0][idx + 2];
+                        });
+                    }
 
+                    const rows = tabContent.querySelectorAll('tbody tr');
                     for (let i = 1; i < json.length && i <= rows.length; i++) {
                         const excelRow = json[i];
                         const targetRow = rows[i - 1];
@@ -1399,11 +1427,6 @@
 
         window.onload = function() {
             generateTables();
-            const monthSelects = document.querySelectorAll('.month-select');
-            if(monthSelects.length >= 2) {
-                monthSelects[0].value = 'اكتوبر';
-                monthSelects[1].value = 'نوفمبر';
-            }
             loadFromGoogleSheet();
         };
     </script>
