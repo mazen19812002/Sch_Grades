@@ -416,14 +416,17 @@
                 transform: none !important;
             }
             .print-page {
-                page-break-after: always;
-                page-break-inside: avoid;
-                break-after: page;
-                break-inside: avoid;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
+                break-after: page !important;
+                break-inside: avoid !important;
                 border: 2px solid #0284c7 !important;
-                margin: 0 !important;
-                padding: 10px !important;
+                margin: 0 0 10mm 0 !important;
+                padding: 8px !important;
                 box-shadow: none !important;
+                height: auto !important;
+                max-height: 100vh !important;
+                overflow: hidden !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -443,10 +446,10 @@
                 print-color-adjust: exact;
             }
             #tab-0 {
-                @page { size: portrait; }
+                @page { size: portrait; margin: 5mm; }
             }
             #tab-1, #tab-2 {
-                @page { size: landscape; }
+                @page { size: landscape; margin: 5mm; }
             }
         }
     </style>
@@ -672,7 +675,9 @@
                 if (!tabContent) continue;
 
                 const classNameInput = tabContent.querySelector('.header-class-name');
-                const sheetName = classNameInput && classNameInput.value.trim() ? classNameInput.value.trim() : `النموذج_${tabIndex + 1}`;
+                let sheetName = classNameInput && classNameInput.value.trim() ? classNameInput.value.trim() : `النموذج_${tabIndex + 1}`;
+                if (tabIndex === 1) sheetName += "_اكتوبر";
+                if (tabIndex === 2) sheetName += "_نوفمبر";
 
                 const rows = tabContent.querySelectorAll('tbody tr');
                 const data = [];
@@ -729,6 +734,14 @@
                 .then(data => {
                     if (!data.sheets) return;
 
+                    data.sheets.forEach((sheetObj) => {
+                        let sIdx = -1;
+                        if (sheetObj.name.includes("النموذج_1") || sheetObj.name.includes("اول")) sIdx = 0; // Or match by tab structure
+                        // Map sheets dynamically by checking names or index
+                        // Let's fallback to index mapping if name matching is loose
+                    });
+
+                    // Direct index mapping to ensure precise sheet restoration
                     data.sheets.forEach((sheetObj, sIdx) => {
                         if (sIdx > 2) return;
                         const tabContent = document.getElementById(`tab-${sIdx}`);
@@ -748,9 +761,9 @@
                             for (let j = 2; j < excelRow.length && (j - 2) < inputs.length; j++) {
                                 if (inputs[j - 1]) {
                                     if (inputs[j - 1].type === 'checkbox') {
-                                        inputs[j - 1].checked = (excelRow[j] === 'TRUE' || excelRow[j] === true);
+                                        inputs[j - 1].checked = (excelRow[j] === 'TRUE' || excelRow[j] === true || excelRow[j] === 'true');
                                     } else {
-                                        inputs[j - 1].value = excelRow[j] !== undefined ? excelRow[j] : '';
+                                        inputs[j - 1].value = excelRow[j] !== undefined && excelRow[j] !== null ? excelRow[j] : '';
                                     }
                                     inputs[j - 1].dispatchEvent(new Event('input'));
                                 }
@@ -1332,7 +1345,7 @@
                 monthSelects[0].value = 'اكتوبر';
                 monthSelects[1].value = 'نوفمبر';
             }
-            // الوضع الافتراضي عند فتح الصفحة هو استعادة البيانات تلقائياً من جوجل شيت
+            // استعادة البيانات تلقائياً من جوجل شيت عند فتح التطبيق
             loadFromGoogleSheet();
         };
     </script>
