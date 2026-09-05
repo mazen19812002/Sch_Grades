@@ -524,7 +524,7 @@
                 <!-- Pages generated via JS -->
             </div>
 
-            <!-- أزرار الحفظ والاستعادة وطباعة وتصدير اكسل أصبحت في النموذج الأول فقط كما طلبتم -->
+            <!-- أزرار الحفظ والاستعادة والطباعة والتصدير في النموذج الأول فقط -->
             <div class="action-row">
                 <input type="file" id="excel-file-0" style="display:none" accept=".xlsx, .xls" onchange="importExcel(event)">
                 <button class="btn-action btn-import" onclick="document.getElementById('excel-file-0').click()">استيراد اكسل</button>
@@ -665,10 +665,17 @@
                 const rows = tabContent.querySelectorAll('tbody tr');
                 const data = [];
 
+                // استخلاص العناوين الصحيحة بدون تكرار
                 const headers = [];
-                tabContent.querySelectorAll('thead tr:last-child th, th').forEach(th => {
+                const thElements = tabContent.querySelectorAll('thead tr:last-child th');
+                thElements.forEach(th => {
                     headers.push(th.innerText.replace(/\n/g, ' '));
                 });
+                if(headers.length === 0) {
+                    tabContent.querySelectorAll('thead tr th').forEach(th => {
+                        headers.push(th.innerText.replace(/\n/g, ' '));
+                    });
+                }
                 data.push(headers);
 
                 rows.forEach(row => {
@@ -694,7 +701,7 @@
                 });
             }
 
-            alert("جاري حفظ البيانات في جوجل شيت...");
+            alert("جاري حفظ وتصدير كافة البيانات والأسماء إلى جوجل شيت...");
 
             const form = document.createElement('form');
             form.method = 'POST';
@@ -711,7 +718,7 @@
             form.submit();
             document.body.removeChild(form);
 
-            alert("تم إرسال كافة البيانات والأسماء إلى جوجل شيت بنجاح!");
+            alert("تم حفظ البيانات وتصديرها إلى جوجل شيت بنجاح!");
         }
 
         function loadFromGoogleSheet() {
@@ -734,14 +741,18 @@
                         const rows = tabContent.querySelectorAll('tbody tr');
                         const sheetRows = sheetObj.rows;
 
+                        // نبدأ من الصف الثاني (تخطي العناوين)
                         for (let i = 1; i < sheetRows.length && (i - 1) < rows.length; i++) {
                             const excelRow = sheetRows[i];
                             const targetRow = rows[i - 1];
                             const inputs = targetRow.querySelectorAll('input');
                             
+                            // العمود الثاني (فهرس 1) مخصص لاسم الطالب بناءً على الهيكل
                             if (excelRow[1] !== undefined && inputs[0]) {
                                 inputs[0].value = excelRow[1];
                             }
+                            
+                            // تعبئة باقي حقول المدخلات والدرجات بدقة
                             for (let j = 2; j < excelRow.length && (j - 2) < inputs.length; j++) {
                                 if (inputs[j - 1]) {
                                     if (inputs[j - 1].type === 'checkbox') {
@@ -756,11 +767,11 @@
                     });
 
                     updateTab0DynamicAverages();
-                    alert("تمت استعادة كافة البيانات والأسماء بنجاح!");
+                    alert("تمت استعادة كافة الأسماء والدرجات بنجاح من جوجل شيت!");
                 })
                 .catch(err => {
-                    console.log("خطأ في الاستعادة:", err);
-                    alert("فشل جلب البيانات من جوجل شيت.");
+                    console.log("خطأ أثناء الاستعادة:", err);
+                    alert("حدث خطأ أثناء محاولة الاستعادة من جوجل شيت.");
                 });
         }
 
@@ -1269,7 +1280,6 @@
                         const targetRow = rows[i - 1];
                         const inputs = targetRow.querySelectorAll('input');
                         
-                        `
                         if (excelRow[1] !== undefined && inputs[0]) {
                             inputs[0].value = excelRow[1];
                         }
@@ -1293,6 +1303,7 @@
             const tabs = document.querySelectorAll('.tab-content');
             const buttons = document.querySelectorAll('.tab-btn');
             
+            tabs.headers = []; // cleanup placeholder
             tabs.forEach((tab, idx) => {
                 tab.classList.remove('active');
                 if(buttons[idx]) buttons[idx].classList.remove('active');
