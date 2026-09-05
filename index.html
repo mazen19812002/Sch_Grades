@@ -421,11 +421,11 @@
                 break-after: page !important;
                 break-inside: avoid !important;
                 border: 2px solid #0284c7 !important;
-                margin: 0 0 10mm 0 !important;
-                padding: 8px !important;
+                margin: 0 0 5mm 0 !important;
+                padding: 6px !important;
                 box-shadow: none !important;
                 height: auto !important;
-                max-height: 100vh !important;
+                max-height: 96vh !important;
                 overflow: hidden !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -446,10 +446,10 @@
                 print-color-adjust: exact;
             }
             #tab-0 {
-                @page { size: portrait; margin: 5mm; }
+                @page { size: portrait; margin: 4mm; }
             }
             #tab-1, #tab-2 {
-                @page { size: landscape; margin: 5mm; }
+                @page { size: landscape; margin: 4mm; }
             }
         }
     </style>
@@ -674,10 +674,7 @@
                 const tabContent = document.getElementById(`tab-${tabIndex}`);
                 if (!tabContent) continue;
 
-                const classNameInput = tabContent.querySelector('.header-class-name');
-                let sheetName = classNameInput && classNameInput.value.trim() ? classNameInput.value.trim() : `النموذج_${tabIndex + 1}`;
-                if (tabIndex === 1) sheetName += "_اكتوبر";
-                if (tabIndex === 2) sheetName += "_نوفمبر";
+                let sheetName = tabIndex === 0 ? "النموذج_الأول" : (tabIndex === 1 ? "اكتوبر" : "نوفمبر");
 
                 const rows = tabContent.querySelectorAll('tbody tr');
                 const data = [];
@@ -721,7 +718,7 @@
                 },
                 body: JSON.stringify(payload)
             }).then(() => {
-                alert("تم إرسال البيانات إلى جوجل شيت بنجاح!");
+                alert("تم إرسال البيانات إلى جوجل شيت بنجاح! يمكنك الآن مراجعتها بداخل الملف.");
             }).catch(err => {
                 console.error(err);
                 alert("حدث خطأ أثناء الحفظ في جوجل شيت.");
@@ -735,16 +732,14 @@
                     if (!data.sheets) return;
 
                     data.sheets.forEach((sheetObj) => {
-                        let sIdx = -1;
-                        if (sheetObj.name.includes("النموذج_1") || sheetObj.name.includes("اول")) sIdx = 0; // Or match by tab structure
-                        // Map sheets dynamically by checking names or index
-                        // Let's fallback to index mapping if name matching is loose
-                    });
+                        let targetTabIdx = -1;
+                        if (sheetObj.name.includes("النموذج_الأول")) targetTabIdx = 0;
+                        else if (sheetObj.name.includes("اكتوبر")) targetTabIdx = 1;
+                        else if (sheetObj.name.includes("نوفمبر")) targetTabIdx = 2;
 
-                    // Direct index mapping to ensure precise sheet restoration
-                    data.sheets.forEach((sheetObj, sIdx) => {
-                        if (sIdx > 2) return;
-                        const tabContent = document.getElementById(`tab-${sIdx}`);
+                        if (targetTabIdx === -1) return;
+
+                        const tabContent = document.getElementById(`tab-${targetTabIdx}`);
                         if (!tabContent) return;
 
                         const rows = tabContent.querySelectorAll('tbody tr');
@@ -774,7 +769,7 @@
                     updateTab0DynamicAverages();
                 })
                 .catch(err => {
-                    console.error("فشل التحميل التلقائي:", err);
+                    console.log("جارٍ تهيئة الاتصال أو بانتظار المدخلات:", err);
                 });
         }
 
@@ -1345,7 +1340,7 @@
                 monthSelects[0].value = 'اكتوبر';
                 monthSelects[1].value = 'نوفمبر';
             }
-            // استعادة البيانات تلقائياً من جوجل شيت عند فتح التطبيق
+            // استعادة البيانات تلقائياً بأسماء الطلاب وكافة الدرجات عند فتح التطبيق
             loadFromGoogleSheet();
         };
     </script>
