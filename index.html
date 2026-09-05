@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كشوف تقدير درجات مادة اللغة الإنجليزية</title>
+    <!-- SheetJS for Excel Import/Export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.9);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --text-color: #0f172a;
+            --primary-blue: #0284c7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px;
+        }
+
+        /* Top Navigation Bar & Tools */
+        .top-bar {
+            position: fixed;
+            top: 10px;
+            left: 15px;
+            right: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 8px 20px;
+            box-shadow: var(--glass-shadow);
+            z-index: 1000;
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background: rgba(2, 132, 199, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+        }
+
+        .controls-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--text-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: scale(1.05);
+        }
+
+        /* Main Container */
+        .main-wrapper {
+            margin-top: 70px;
+            margin-bottom: 45px;
+            width: 100%;
+            max-width: 100%;
+            transition: transform 0.2s ease;
+            transform-origin: top center;
+        }
+
+        .tab-content {
+            display: none;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 15px;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Optimized Header Info Section */
+        .sheet-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 2px solid #0284c7;
+        }
+
+        .header-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .header-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .header-item label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #0369a1;
+            white-space: nowrap;
+        }
+
+        .header-item input, .header-item select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #0284c7;
+            padding: 4px 6px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text-color);
+            outline: none;
+        }
+
+        .header-item input:focus, .header-item select:focus {
+            border-color: #0369a1;
+            background: #ffffff;
+            box-shadow: 0 0 5px rgba(2, 132, 199, 0.3);
+        }
+
+        /* Print Page Controls Bar */
+        .print-controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 6px 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid #bae6fd;
+        }
+
+        .print-controls-bar input {
+            width: 70px;
+            padding: 2px 4px;
+            text-align: center;
+            border: 1px solid #0284c7;
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        /* Tables & Pages Container */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 6px;
+            background: transparent;
+            margin-bottom: 10px;
+        }
+
+        .print-page {
+            border: 2px solid #0284c7;
+            background: #ffffff;
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.1);
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .page-footer-pagination {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 8px;
+            padding-top: 5px;
+            border-top: 1px solid #bae6fd;
+            color: #0369a1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        th, td {
+            border: 1.5px solid #0284c7;
+            padding: 3px 2px;
+            vertical-align: middle;
+            height: 26px;
+        }
+
+        th {
+            background: #bae6fd;
+            color: #0f172a;
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        tr:nth-child(even) {
+            background: #f0f9ff;
+        }
+
+        td input[type="text"], td input[type="number"] {
+            width: 100%;
+            background: transparent;
+            border: none;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-color);
+            outline: none;
+        }
+
+        .calc-cell {
+            font-weight: bold;
+            color: #0369a1;
+            background: #e0f2fe;
+        }
+
+        /* Signatures Section */
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+            text-align: center;
+            padding-top: 8px;
+            border-top: 1.5px dashed #0284c7;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .signature-box {
+            font-weight: bold;
+            font-size: 12px;
+            color: #0f172a;
+            background: #f8fafc;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #7dd3fc;
+        }
+
+        /* Action Buttons Row */
+        .action-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn-action {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            color: #ffffff;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-print { background: linear-gradient(135deg, #0284c7, #0369a1); }
+        .btn-export { background: linear-gradient(135deg, #10b981, #059669); }
+        .btn-import { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .btn-gsheet { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+        .btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* Floating Toggle & Footer */
+        .floating-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 24px;
+            background: linear-gradient(90deg, #0284c7, #10b981, #0284c7);
+            background-size: 200% 100%;
+            animation: gradientMove 6s linear infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            z-index: 900;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hidden-ui {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-15px);
+            transition: all 0.3s ease;
+        }
+
+        @media print {
+            .top-bar, .floating-toggle, footer, .action-row, .print-controls-bar {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .tab-content {
+                background: white !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+            .main-wrapper {
+                margin: 0 !important;
+                transform: none !important;
+            }
+            .print-page {
+                page-break-after: always;
+                page-break-inside: avoid;
+                break-after: page;
+                break-inside: avoid;
+                border: 2px solid #0284c7 !important;
+                margin: 0 !important;
+                padding: 10px !important;
+                box-shadow: none !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            th {
+                background: #bae6fd !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            tr:nth-child(even) {
+                background: #f0f9ff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .calc-cell {
+                background: #e0f2fe !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            #tab-0 {
+                @page { size: portrait; }
+            }
+            #tab-1, #tab-2 {
+                @page { size: landscape; }
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation Bar & Tools -->
+    <div class="top-bar" id="topBar">
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab(0)">النموذج الأول (طولي)</button>
+            <button class="tab-btn" onclick="switchTab(1)">النموذج الثاني - تكرار 1 (عرضي)</button>
+            <button class="tab-btn" onclick="switchTab(2)">النموذج الثاني - تكرار 2 (عرضي)</button>
+        </div>
+        <div class="controls-group">
+            <button class="control-btn" onclick="adjustZoom(-0.1)" title="تصغير">-</button>
+            <button class="control-btn" onclick="adjustZoom(0.1)" title="تكبير">+</button>
+            <button class="control-btn" onclick="toggleFullScreen()" title="ملء الشاشة">⛶</button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-wrapper" id="mainWrapper">
+
+        <!-- TAB 0: Portrait First Model -->
+        <div class="tab-content active" id="tab-0" data-tab="0">
+            <div class="sheet-header">
+                <div class="header-row">
+                    <div class="header-item" style="flex: 2;">
+                        <label>الإدارة والمدرسة:</label>
+                        <input type="text" class="header-admin-school" value="إدارة شرق كفر الشيخ التعليمية - مدرسة الشهيد نجيب محي الشناوي للتعليم الأساسي بدقميرة">
+                    </div>
+                    <div class="header-item">
+                        <label>المعلم:</label>
+                        <input type="text" class="header-teacher" value="مازن فوزي محمد على بدوي">
+                    </div>
+                </div>
+                <div class="header-row">
+                    <div class="header-item">
+                        <label>المادة:</label>
+                        <input type="text" class="header-subject" value="لغة انجليزية">
+                    </div>
+                    <div class="header-item">
+                        <label>العام الدراسي:</label>
+                        <input type="text" class="header-year" value="2026-2027">
+                    </div>
+                    <div class="header-item">
+                        <label>الفصل الدراسي:</label>
+                        <select class="header-term">
+                            <option>الاول</option>
+                            <option>الثاني</option>
+                        </select>
+                    </div>
+                    <div class="header-item">
+                        <label>فصل:</label>
+                        <input type="text" class="header-class-name" placeholder="مثال: اول 1" value="اول 1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="print-controls-bar">
+                <span>إعدادات طباعة الصفحة الثانية:</span>
+                <label>بداية المسلسل للصفحة 2: <input type="number" id="start-seq-0" value="26" min="1" onchange="updatePagination(0)"></label>
+                <label>عدد الطلاب بالصفحة: <input type="number" id="page-size-0" value="25" min="1" max="50" onchange="regenerateAllTables()"></label>
+            </div>
+
+            <div class="table-container" id="container-0">
+                <!-- Pages generated via JS -->
+            </div>
+
+            <div class="action-row">
+                <input type="file" id="excel-file-0" style="display:none" accept=".xlsx, .xls" onchange="importExcel(event)">
+                <button class="btn-action btn-import" onclick="document.getElementById('excel-file-0').click()">استيراد اكسل</button>
+                <button class="btn-action btn-export" onclick="exportExcel()">تصدير اكسل</button>
+                <button class="btn-action btn-gsheet" onclick="saveToGoogleSheet()">حفظ في جوجل شيت</button>
+                <button class="btn-action btn-gsheet" style="background: linear-gradient(135deg, #0d9488, #0f766e);" onclick="loadFromGoogleSheet()">استعادة من جوجل شيت</button>
+                <a href="https://docs.google.com/spreadsheets/d/18YCsXBDWYN_-dExi43s5_88yMJannOrbYC2DDaYnCmU/edit?usp=sharing" target="_blank" class="btn-action btn-gsheet">فتح جوجل شيت</a>
+                <button class="btn-action btn-print" onclick="window.print()">طباعة النموذج الأول (Portrait)</button>
+            </div>
+        </div>
+
+        <!-- TAB 1: Landscape Second Model - Copy 1 (October Default) -->
+        <div class="tab-content" id="tab-1" data-tab="1">
+            <div class="sheet-header">
+                <div class="header-row">
+                    <div class="header-item" style="flex: 2;">
+                        <label>الإدارة والمدرسة:</label>
+                        <input type="text" class="header-admin-school" value="إدارة شرق كفر الشيخ التعليمية - مدرسة الشهيد نجيب محي الشناوي للتعليم الأساسي بدقميرة">
+                    </div>
+                    <div class="header-item">
+                        <label>المعلم:</label>
+                        <input type="text" class="header-teacher" value="مازن فوزي محمد على بدوي">
+                    </div>
+                </div>
+                <div class="header-row">
+                    <div class="header-item">
+                        <label>المادة:</label>
+                        <input type="text" class="header-subject" value="لغة انجليزية">
+                    </div>
+                    <div class="header-item">
+                        <label>العام الدراسي:</label>
+                        <input type="text" class="header-year" value="2026-2027">
+                    </div>
+                    <div class="header-item">
+                        <label>الفصل الدراسي:</label>
+                        <select class="header-term">
+                            <option>الاول</option>
+                            <option>الثاني</option>
+                        </select>
+                    </div>
+                    <div class="header-item">
+                        <label>الشهر:</label>
+                        <select class="month-select" onchange="syncMonthSelectors(this)">
+                            <option selected>اكتوبر</option>
+                            <option>نوفمبر</option>
+                        </select>
+                    </div>
+                    <div class="header-item">
+                        <label>فصل:</label>
+                        <input type="text" class="header-class-name" placeholder="مثال: اول 1" value="اول 1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="print-controls-bar">
+                <span>إعدادات طباعة الصفحة الثانية:</span>
+                <label>بداية المسلسل للصفحة 2: <input type="number" id="start-seq-1" value="26" min="1" onchange="updatePagination(1)"></label>
+                <label>عدد الطلاب بالصفحة: <input type="number" id="page-size-1" value="25" min="1" max="50" onchange="regenerateAllTables()"></label>
+            </div>
+
+            <div class="table-container" id="container-1">
+                <!-- Pages generated via JS -->
+            </div>
+
+            <div class="action-row">
+                <input type="file" id="excel-file-1" style="display:none" accept=".xlsx, .xls" onchange="importExcel(event)">
+                <button class="btn-action btn-import" onclick="document.getElementById('excel-file-1').click()">استيراد اكسل</button>
+                <button class="btn-action btn-export" onclick="exportExcel()">تصدير اكسل</button>
+                <button class="btn-action btn-gsheet" onclick="saveToGoogleSheet()">حفظ في جوجل شيت</button>
+                <button class="btn-action btn-gsheet" style="background: linear-gradient(135deg, #0d9488, #0f766e);" onclick="loadFromGoogleSheet()">استعادة من جوجل شيت</button>
+                <a href="https://docs.google.com/spreadsheets/d/18YCsXBDWYN_-dExi43s5_88yMJannOrbYC2DDaYnCmU/edit?usp=sharing" target="_blank" class="btn-action btn-gsheet">فتح جوجل شيت</a>
+                <button class="btn-action btn-print" onclick="window.print()">طباعة التكرار الأول (Landscape)</button>
+            </div>
+        </div>
+
+        <!-- TAB 2: Landscape Second Model - Copy 2 (November Default) -->
+        <div class="tab-content" id="tab-2" data-tab="2">
+            <div class="sheet-header">
+                <div class="header-row">
+                    <div class="header-item" style="flex: 2;">
+                        <label>الإدارة والمدرسة:</label>
+                        <input type="text" class="header-admin-school" value="إدارة شرق كفر الشيخ التعليمية - مدرسة الشهيد نجيب محي الشناوي للتعليم الأساسي بدقميرة">
+                    </div>
+                    <div class="header-item">
+                        <label>المعلم:</label>
+                        <input type="text" class="header-teacher" value="مازن فوزي محمد على بدوي">
+                    </div>
+                </div>
+                <div class="header-row">
+                    <div class="header-item">
+                        <label>المادة:</label>
+                        <input type="text" class="header-subject" value="لغة انجليزية">
+                    </div>
+                    <div class="header-item">
+                        <label>العام الدراسي:</label>
+                        <input type="text" class="header-year" value="2026-2027">
+                    </div>
+                    <div class="header-item">
+                        <label>الفصل الدراسي:</label>
+                        <select class="header-term">
+                            <option>الاول</option>
+                            <option>الثاني</option>
+                        </select>
+                    </div>
+                    <div class="header-item">
+                        <label>الشهر:</label>
+                        <select class="month-select" onchange="syncMonthSelectors(this)">
+                            <option>اكتوبر</option>
+                            <option selected>نوفمبر</option>
+                        </select>
+                    </div>
+                    <div class="header-item">
+                        <label>فصل:</label>
+                        <input type="text" class="header-class-name" placeholder="مثال: اول 1" value="اول 1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="print-controls-bar">
+                <span>إعدادات طباعة الصفحة الثانية:</span>
+                <label>بداية المسلسل للصفحة 2: <input type="number" id="start-seq-2" value="26" min="1" onchange="updatePagination(2)"></label>
+                <label>عدد الطلاب بالصفحة: <input type="number" id="page-size-2" value="25" min="1" max="50" onchange="regenerateAllTables()"></label>
+            </div>
+
+            <div class="table-container" id="container-2">
+                <!-- Pages generated via JS -->
+            </div>
+
+            <div class="action-row">
+                <input type="file" id="excel-file-2" style="display:none" accept=".xlsx, .xls" onchange="importExcel(event)">
+                <button class="btn-action btn-import" onclick="document.getElementById('excel-file-2').click()">استيراد اكسل</button>
+                <button class="btn-action btn-export" onclick="exportExcel()">تصدير اكسل</button>
+                <button class="btn-action btn-gsheet" onclick="saveToGoogleSheet()">حفظ في جوجل شيت</button>
+                <button class="btn-action btn-gsheet" style="background: linear-gradient(135deg, #0d9488, #0f766e);" onclick="loadFromGoogleSheet()">استعادة من جوجل شيت</button>
+                <a href="https://docs.google.com/spreadsheets/d/18YCsXBDWYN_-dExi43s5_88yMJannOrbYC2DDaYnCmU/edit?usp=sharing" target="_blank" class="btn-action btn-gsheet">فتح جوجل شيت</a>
+                <button class="btn-action btn-print" onclick="window.print()">طباعة التكرار الثاني (Landscape)</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Floating Toggle & Footer -->
+    <button class="floating-toggle" onclick="toggleUI()" title="إظهار/إخفاء القوائم">👁</button>
+    <footer>All rights are reserved to Dr. Mazen Badawy – Doctor of English Teaching & Testing</footer>
+
+    <script>
+        // رابط الأبسكريبت المربوط بجوجل شيت الخاص بك
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby6WbNCtxM_vAhiGO0D9QjbgzmJk0IKt3b5dR2dHclOiAXgIBNU1BT7woaeCT6TAgze/exec";
+
+        function saveToGoogleSheet() {
+            const payload = { sheets: [] };
+
+            for (let tabIndex = 0; tabIndex <= 2; tabIndex++) {
+                const tabContent = document.getElementById(`tab-${tabIndex}`);
+                if (!tabContent) continue;
+
+                const classNameInput = tabContent.querySelector('.header-class-name');
+                const sheetName = classNameInput && classNameInput.value.trim() ? classNameInput.value.trim() : `النموذج_${tabIndex + 1}`;
+
+                const rows = tabContent.querySelectorAll('tbody tr');
+                const data = [];
+
+                const headers = [];
+                tabContent.querySelectorAll('thead tr:last-child th, thead tr th').forEach(th => {
+                    headers.push(th.innerText.replace(/\n/g, ' '));
+                });
+                data.push(headers);
+
+                rows.forEach(row => {
+                    const rowData = [];
+                    row.querySelectorAll('td').forEach(td => {
+                        const input = td.querySelector('input');
+                        if (input) {
+                            if (input.type === 'checkbox') {
+                                rowData.push(input.checked ? 'TRUE' : 'FALSE');
+                            } else {
+                                rowData.push(input.value);
+                            }
+                        } else {
+                            rowData.push(td.innerText);
+                        }
+                    });
+                    data.push(rowData);
+                });
+
+                payload.sheets.push({
+                    name: sheetName,
+                    rows: data
+                });
+            }
+
+            alert("جاري حفظ البيانات في جوجل شيت...");
+
+            fetch(WEB_APP_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                alert("تم إرسال البيانات إلى جوجل شيت بنجاح!");
+            }).catch(err => {
+                console.error(err);
+                alert("حدث خطأ أثناء الحفظ في جوجل شيت.");
+            });
+        }
+
+        function loadFromGoogleSheet() {
+            alert("جاري استعادة البيانات من جوجل شيت...");
+
+            fetch(WEB_APP_URL)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.sheets) {
+                        alert("لم يتم العثور على بيانات.");
+                        return;
+                    }
+
+                    data.sheets.forEach((sheetObj, sIdx) => {
+                        if (sIdx > 2) return;
+                        const tabContent = document.getElementById(`tab-${sIdx}`);
+                        if (!tabContent) return;
+
+                        const rows = tabContent.querySelectorAll('tbody tr');
+                        const sheetRows = sheetObj.rows;
+
+                        for (let i = 1; i < sheetRows.length && (i - 1) < rows.length; i++) {
+                            const excelRow = sheetRows[i];
+                            const targetRow = rows[i - 1];
+                            const inputs = targetRow.querySelectorAll('input');
+                            
+                            if (excelRow[1] !== undefined && inputs[0]) {
+                                inputs[0].value = excelRow[1];
+                            }
+                            for (let j = 2; j < excelRow.length && (j - 2) < inputs.length; j++) {
+                                if (inputs[j - 1]) {
+                                    inputs[j - 1].value = excelRow[j] !== undefined ? excelRow[j] : '';
+                                    inputs[j - 1].dispatchEvent(new Event('input'));
+                                }
+                            }
+                        }
+                    });
+
+                    updateTab0DynamicAverages();
+                    alert("تمت استعادة كافة البيانات من جوجل شيت بنجاح!");
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("حدث خطأ أثناء استعادة البيانات. تأكد من إعداد النشر بشكل صحيح في Apps Script.");
+                });
+        }
+
+        function validateMax(input) {
+            const max = parseFloat(input.getAttribute('max'));
+            let val = parseFloat(input.value);
+            if (!isNaN(max) && !isNaN(val)) {
+                if (val > max) {
+                    input.value = max;
+                } else if (val < 0) {
+                    input.value = 0;
+                }
+            }
+        }
+
+        function handleArrowNavigation(e) {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                const currentInput = e.target;
+                if (currentInput.tagName !== 'INPUT') return;
+                
+                const cell = currentInput.closest('td, th');
+                const row = currentInput.closest('tr');
+                if (!cell || !row) return;
+
+                const cellIndex = Array.from(row.children).indexOf(cell);
+                let targetRow = null;
+
+                if (e.key === 'ArrowUp') {
+                    targetRow = row.previousElementSibling;
+                    if (!targetRow) {
+                        const prevPage = row.closest('.print-page').previousElementSibling;
+                        if (prevPage) {
+                            const rows = prevPage.querySelectorAll('tbody tr');
+                            targetRow = rows[rows.length - 1];
+                        }
+                    }
+                } else if (e.key === 'ArrowDown') {
+                    targetRow = row.nextElementSibling;
+                    if (!targetRow) {
+                        const nextPage = row.closest('.print-page').nextElementSibling;
+                        if (nextPage) {
+                            const rows = nextPage.querySelectorAll('tbody tr');
+                            targetRow = rows[0];
+                        }
+                    }
+                } else if (e.key === 'ArrowLeft') {
+                    const nextCell = cell.nextElementSibling;
+                    if (nextCell) {
+                        const nextInput = nextCell.querySelector('input');
+                        if (nextInput) {
+                            e.preventDefault();
+                            nextInput.focus();
+                            if(nextInput.type === 'text' || nextInput.type === 'number') nextInput.select();
+                        }
+                    }
+                    return;
+                } else if (e.key === 'ArrowRight') {
+                    const prevCell = cell.previousElementSibling;
+                    if (prevCell) {
+                        const prevInput = prevCell.querySelector('input');
+                        if (prevInput) {
+                            e.preventDefault();
+                            prevInput.focus();
+                            if(prevInput.type === 'text' || prevInput.type === 'number') prevInput.select();
+                        }
+                    }
+                    return;
+                }
+
+                if (targetRow) {
+                    const targetCell = targetRow.children[cellIndex];
+                    if (targetCell) {
+                        const targetInput = targetCell.querySelector('input');
+                        if (targetInput) {
+                            e.preventDefault();
+                            targetInput.focus();
+                            if(targetInput.type === 'text' || targetInput.type === 'number') targetInput.select();
+                        }
+                    }
+                }
+            }
+        }
+
+        function syncMonthSelectors(changedSelect) {
+            const val = changedSelect.value;
+            document.querySelectorAll('.month-select').forEach(sel => {
+                sel.value = val;
+            });
+        }
+
+        function calculateAbsence(inputEl) {
+            const row = inputEl.closest('tr');
+            const pageContainer = row.closest('.print-page');
+            if (!pageContainer) return;
+            
+            const absenceCheckboxes = pageContainer.querySelectorAll('.absence-checkbox');
+            let activeDaysCount = 0;
+            absenceCheckboxes.forEach(cb => {
+                if (cb.checked) activeDaysCount++;
+            });
+
+            const absenceInputs = row.querySelectorAll('.absence-input');
+            let studentAbsenceCount = 0;
+            absenceInputs.forEach(inp => {
+                if (inp.value.trim() === 'غ') studentAbsenceCount++;
+            });
+
+            let absenceScore = 10;
+            if (activeDaysCount > 0) {
+                let ratio = studentAbsenceCount / activeDaysCount;
+                if (ratio > 1) ratio = 1;
+                absenceScore = 10 - (ratio * 10);
+            }
+            absenceScore = Math.round(absenceScore * 10) / 10;
+
+            const attendanceCell = row.querySelector('.calc-attendance-score');
+            if (attendanceCell) {
+                attendanceCell.innerText = absenceScore;
+            }
+
+            calcLandscape(row);
+        }
+
+        function updateAllAbsenceScoresInPage(checkboxEl) {
+            const pageContainer = checkboxEl.closest('.print-page');
+            if (!pageContainer) return;
+            const rows = pageContainer.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const firstAbsenceInput = row.querySelector('.absence-input');
+                if(firstAbsenceInput) calculateAbsence(firstAbsenceInput);
+            });
+        }
+
+        function calcLandscape(row) {
+            const numInputs = row.querySelectorAll('input[type="number"]');
+            if (numInputs.length >= 9) {
+                let h1 = parseFloat(numInputs[0].value) || 0;
+                let h2 = parseFloat(numInputs[1].value) || 0;
+                let h3 = parseFloat(numInputs[2].value) || 0;
+                let h4 = parseFloat(numInputs[3].value) || 0;
+                
+                let sumHw = h1 + h2 + h3 + h4;
+                const totalHwCell = row.querySelector('.calc-total-hw');
+                if(totalHwCell) totalHwCell.innerText = sumHw;
+
+                let w1 = parseFloat(numInputs[4].value) || 0;
+                let w2 = parseFloat(numInputs[5].value) || 0;
+                let w3 = parseFloat(numInputs[6].value) || 0;
+                let w4 = parseFloat(numInputs[7].value) || 0;
+                
+                let sumAssessments = w1 + w2 + w3 + w4;
+                const totalAssCell = row.querySelector('.calc-total-assessments');
+                if(totalAssCell) totalAssCell.innerText = sumAssessments;
+            }
+            updateTab0DynamicAverages();
+        }
+
+        function updateTab0DynamicAverages() {
+            const container0 = document.getElementById('container-0');
+            if (!container0) return;
+            const rows0 = container0.querySelectorAll('tbody tr');
+
+            rows0.forEach((row0, index) => {
+                const row1 = document.querySelector(`#container-1 tbody tr:nth-child(${index + 1})`);
+                const row2 = document.querySelector(`#container-2 tbody tr:nth-child(${index + 1})`);
+
+                const cells0 = row0.querySelectorAll('td');
+                if (cells0.length >= 9 && row1 && row2) {
+                    const nameInput1 = row1.querySelector('.student-name');
+                    const nameInput0 = row0.querySelector('.student-name');
+                    if(nameInput1 && nameInput0 && !nameInput0.value) {
+                        nameInput0.value = nameInput1.value;
+                    }
+
+                    const numInputs1 = row1.querySelectorAll('input[type="number"]');
+                    const octTest = numInputs1.length > 0 ? parseFloat(numInputs1[numInputs1.length - 1].value) || 0 : 0;
+                    cells0[2].innerText = octTest;
+
+                    const numInputs2 = row2.querySelectorAll('input[type="number"]');
+                    const novTest = numInputs2.length > 0 ? parseFloat(numInputs2[numInputs2.length - 1].value) || 0 : 0;
+                    cells0[3].innerText = novTest;
+
+                    const totalTests = octTest + novTest;
+                    cells0[4].innerText = totalTests;
+
+                    const att1 = parseFloat(row1.querySelector('.calc-attendance-score')?.innerText) || 10;
+                    const att2 = parseFloat(row2.querySelector('.calc-attendance-score')?.innerText) || 10;
+                    const avgAtt = Math.round(((att1 + att2) / 2) * 10) / 10;
+                    cells0[5].innerText = avgAtt;
+
+                    const hw1 = parseFloat(row1.querySelector('.calc-total-hw')?.innerText) || 0; 
+                    const hw2 = parseFloat(row2.querySelector('.calc-total-hw')?.innerText) || 0; 
+                    const avgHw10 = Math.round(((hw1 + hw2) / 2) * 10) / 10; 
+                    cells0[6].innerText = avgHw10;
+
+                    const ass1 = parseFloat(row1.querySelector('.calc-total-assessments')?.innerText) || 0; 
+                    const ass2 = parseFloat(row2.querySelector('.calc-total-assessments')?.innerText) || 0; 
+                    const avgAss = Math.round(((ass1 + ass2) / 2) * 10) / 10;
+                    cells0[7].innerText = avgAss;
+
+                    const grandTotal = totalTests + avgAtt + avgHw10 + avgAss;
+                    cells0[8].innerText = Math.round(grandTotal * 10) / 10;
+                }
+            });
+        }
+
+        function regenerateAllTables() {
+            generateTables();
+        }
+
+        function generateTables() {
+            for (let tabIndex = 0; tabIndex <= 2; tabIndex++) {
+                const container = document.getElementById(`container-${tabIndex}`);
+                if(!container) continue;
+                
+                const existingNames = [];
+                container.querySelectorAll('.student-name').forEach(inp => existingNames.push(inp.value));
+
+                container.innerHTML = '';
+
+                const pageSizeInput = document.getElementById(`page-size-${tabIndex}`);
+                const pageSize = pageSizeInput ? parseInt(pageSizeInput.value) || 25 : 25;
+
+                for (let page = 0; page < 2; page++) {
+                    const pageDiv = document.createElement('div');
+                    pageDiv.className = 'print-page';
+
+                    let tableHTML = `<div class="table-container"><table><thead>`;
+                    
+                    if (tabIndex === 0) {
+                        tableHTML += `
+                            <tr>
+                                <th rowspan="2">م</th>
+                                <th rowspan="2" style="width: 25%;">اسم الطالب</th>
+                                <th>اختبار شهر أكتوبر</th>
+                                <th>اختبار شهر نوفمبر</th>
+                                <th>مجموع الاختبارات</th>
+                                <th>متوسط المواظبة والسلوك</th>
+                                <th>مجموع الواجب<br>١٠</th>
+                                <th>متوسط التقييمات</th>
+                                <th>المجموع</th>
+                                <th>الدرجة الأصلية للمادة</th>
+                                <th>ملاحظات</th>
+                            </tr>
+                            <tr>
+                                <th>١٥</th>
+                                <th>١٥</th>
+                                <th>٣٠</th>
+                                <th>١٠</th>
+                                <th>١٠</th>
+                                <th>٢٠</th>
+                                <th>٧٠</th>
+                                <th>٧٠</th>
+                                <th></th>
+                            </tr>`;
+                    } else {
+                        let checkboxHeaders1 = '';
+                        let checkboxHeaders2 = '';
+                        for(let j=1; j<=6; j++) {
+                            checkboxHeaders1 += `<th><input type="checkbox" class="absence-checkbox" onchange="updateAllAbsenceScoresInPage(this)" title="يوم فعلي ${j}"></th>`;
+                        }
+                        for(let j=7; j<=12; j++) {
+                            checkboxHeaders2 += `<th><input type="checkbox" class="absence-checkbox" onchange="updateAllAbsenceScoresInPage(this)" title="يوم فعلي ${j}"></th>`;
+                        }
+
+                        tableHTML += `
+                            <tr>
+                                <th rowspan="2">م</th>
+                                <th rowspan="2" style="width: 18%;">اسم الطالب</th>
+                                <th colspan="6">غياب الشهر (الجزء 1)</th>
+                                <th colspan="6">غياب الشهر (الجزء 2)</th>
+                                <th rowspan="2">مواظبة وسلوك<br>١٠</th>
+                                <th colspan="4">كراسة الواجب<br>٢.٥</th>
+                                <th rowspan="2">مجموع الواجب<br>١٠</th>
+                                <th colspan="4">التقييم الاسبوعي<br>٥</th>
+                                <th rowspan="2">مجموع التقييم<br>٢٠</th>
+                                <th rowspan="2">اختبار الشهر<br>١٥</th>
+                            </tr>
+                            <tr>
+                                ${checkboxHeaders1}
+                                ${checkboxHeaders2}
+                                <th>الأول</th><th>الثاني</th><th>الثالث</th><th>الرابع</th>
+                                <th>الأول</th><th>الثاني</th><th>الثالث</th><th>الرابع</th>
+                            </tr>`;
+                    }
+                    tableHTML += `</thead><tbody class="page-tbody" data-page="${page}">`;
+
+                    const startSeqInput = document.getElementById(`start-seq-${tabIndex}`);
+                    const startSeq2 = startSeqInput ? parseInt(startSeqInput.value) || 26 : 26;
+
+                    for (let r = 1; r <= pageSize; r++) {
+                        const globalIndex = page === 0 ? r : startSeq2 + (r - 1);
+                        const nameIdx = page * pageSize + (r - 1);
+                        const restoredName = existingNames[nameIdx] || '';
+
+                        if (tabIndex === 0) {
+                            tableHTML += `<tr>
+                                <td class="row-index">${globalIndex}</td>
+                                <td><input type="text" class="student-name" value="${restoredName}" onpaste="handleStudentPaste(event, ${r-1}, ${page})" oninput="syncStudentName(this, ${r-1}, ${page})"></td>
+                                <td class="calc-cell">0</td>
+                                <td class="calc-cell">0</td>
+                                <td class="calc-cell">0</td>
+                                <td class="calc-cell">0</td>
+                                <td class="calc-cell">0</td>
+                                <td class="calc-cell">0</td>
+                                <td class="calc-cell" style="font-weight:bold; color:#0369a1;">0</td>
+                                <td>70</td>
+                                <td><input type="text"></td>
+                            </tr>`;
+                        } else {
+                            let absenceInputs = '';
+                            for(let j=0; j<12; j++) absenceInputs += `<td><input type="text" class="absence-input" maxlength="1" oninput="this.value=this.value.trim(); calculateAbsence(this)" placeholder=""></td>`;
+                            tableHTML += `<tr>
+                                <td class="row-index">${globalIndex}</td>
+                                <td><input type="text" class="student-name" value="${restoredName}" oninput="syncStudentNameFromTab1(this)"></td>
+                                ${absenceInputs}
+                                <td class="calc-cell calc-attendance-score">10</td>
+                                <td><input type="number" min="0" max="2.5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
+                                <td><input type="number" min="0" max="2.5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
+                                <td><input type="number" min="0" max="2.5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
+                                <td><input type="number" min="0" max="2.5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
+                                <td class="calc-cell calc-total-hw">0</td>
+                                <td><input type="number" min="0" max="5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
+                                <td><input type="number" min="0" max="5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
+                                <td><input type="number" min="0" max="5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
+                                <td><input type="number" min="0" max="5" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
+                                <td class="calc-cell calc-total-assessments">0</td>
+                                <td><input type="number" min="0" max="15" oninput="validateMax(this); calcLandscape(this.closest('tr'))"></td>
+                            </tr>`;
+                        }
+                    }
+
+                    tableHTML += `</tbody></table></div>`;
+                    
+                    tableHTML += `<div class="signatures-grid">
+                        <div class="signature-box">معلم المادة (مازن بدوي):<br><br>...........................</div>
+                        <div class="signature-box">وكيل المدرسة:<br><br>...........................</div>
+                        <div class="signature-box">مدير المدرسة:<br><br>...........................</div>
+                    </div>`;
+
+                    tableHTML += `<div class="page-footer-pagination">
+                        <span>الصفحة ${page + 1} من 2</span>
+                        <span>كشف درجات مادة اللغة الإنجليزية</span>
+                    </div>`;
+
+                    pageDiv.innerHTML = tableHTML;
+                    container.appendChild(pageDiv);
+                }
+            }
+
+            document.querySelectorAll('table input').forEach(input => {
+                input.addEventListener('keydown', handleArrowNavigation);
+            });
+            updateTab0DynamicAverages();
+        }
+
+        function handleStudentPaste(e, rowIndex, pageNum) {
+            e.preventDefault();
+            const clipboardData = e.clipboardData || window.clipboardData;
+            const pastedText = clipboardData.getData('Text');
+            const lines = pastedText.split(/\r\n|\n|\r/).filter(line => line.trim() !== '');
+
+            const pageSizeInput = document.getElementById(`page-size-0`);
+            const pageSize = pageSizeInput ? parseInt(pageSizeInput.value) || 25 : 25;
+
+            const startGlobalIdx = pageNum * pageSize + rowIndex;
+            let currentGlobalIdx = startGlobalIdx;
+
+            lines.forEach(name => {
+                [0, 1, 2].forEach(tIdx => {
+                    const container = document.getElementById(`container-${tIdx}`);
+                    if (container) {
+                        const inputs = container.querySelectorAll('.student-name');
+                        if (inputs[currentGlobalIdx]) {
+                            inputs[currentGlobalIdx].value = name.trim();
+                        }
+                    }
+                });
+                currentGlobalIdx++;
+            });
+            updateTab0DynamicAverages();
+        }
+
+        function syncStudentName(inputEl, rowIndex, pageNum) {
+            const val = inputEl.value;
+            const pageSizeInput = document.getElementById(`page-size-0`);
+            const pageSize = pageSizeInput ? parseInt(pageSizeInput.value) || 25 : 25;
+            const globalRowIdx = pageNum * pageSize + rowIndex;
+
+            [1, 2].forEach(tIdx => {
+                const container = document.getElementById(`container-${tIdx}`);
+                if (container) {
+                    const allInputs = container.querySelectorAll('.student-name');
+                    if (allInputs[globalRowIdx]) {
+                        allInputs[globalRowIdx].value = val;
+                    }
+                }
+            });
+        }
+
+        function syncStudentNameFromTab1(inputEl) {
+            const row = inputEl.closest('tr');
+            const container = inputEl.closest('.table-container');
+            let globalIdx = 0;
+            const allPages = container.querySelectorAll('.print-page');
+            const pageSizeInput = container.closest('.tab-content').querySelector('input[id^="page-size-"]');
+            const pageSize = pageSizeInput ? parseInt(pageSizeInput.value) || 25 : 25;
+
+            allPages.forEach((p, pIdx) => {
+                const rowsInP = p.querySelectorAll('tbody tr');
+                rowsInP.forEach((r, rIdx) => {
+                    if (r === row) {
+                        globalIdx = pIdx * pageSize + rIdx;
+                    }
+                });
+            });
+
+            const val = inputEl.value;
+            [0, 1, 2].forEach(tIdx => {
+                const c = document.getElementById(`container-${tIdx}`);
+                if (c) {
+                    const inputs = c.querySelectorAll('.student-name');
+                    if (inputs[globalIdx]) {
+                        inputs[globalIdx].value = val;
+                    }
+                }
+            });
+        }
+
+        function updatePagination(tabIndex) {
+            const startSeqInput = document.getElementById(`start-seq-${tabIndex}`);
+            const startSeq2 = startSeqInput ? parseInt(startSeqInput.value) || 26 : 26;
+            const container = document.getElementById(`container-${tabIndex}`);
+            if(!container) return;
+            const page2Tbody = container.querySelectorAll('.page-tbody')[1];
+            if (page2Tbody) {
+                const rows = page2Tbody.querySelectorAll('tr');
+                rows.forEach((row, idx) => {
+                    const indexCell = row.querySelector('.row-index');
+                    if (indexCell) {
+                        indexCell.innerText = startSeq2 + idx;
+                    }
+                });
+            }
+        }
+
+        function exportExcel() {
+            const wb = XLSX.utils.book_new();
+
+            for (let tabIndex = 0; tabIndex <= 2; tabIndex++) {
+                const tabContent = document.getElementById(`tab-${tabIndex}`);
+                if (!tabContent) continue;
+                
+                const classNameInput = tabContent.querySelector('.header-class-name');
+                const classNameVal = classNameInput && classNameInput.value.trim() ? classNameInput.value.trim() : `النموذج_${tabIndex + 1}`;
+
+                const rows = tabContent.querySelectorAll('tbody tr');
+                const data = [];
+
+                const headers = [];
+                tabContent.querySelectorAll('thead tr:last-child th, thead tr th').forEach(th => {
+                    headers.push(th.innerText.replace(/\n/g, ' '));
+                });
+                data.push(headers);
+
+                rows.forEach(row => {
+                    const rowData = [];
+                    row.querySelectorAll('td').forEach(td => {
+                        const input = td.querySelector('input');
+                        if (input) {
+                            rowData.push(input.value);
+                        } else {
+                            rowData.push(td.innerText);
+                        }
+                    });
+                    data.push(rowData);
+                });
+
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                XLSX.utils.book_append_sheet(wb, ws, classNameVal);
+            }
+
+            XLSX.writeFile(wb, `كشوف_درجات_اللغة_الإنجليزية_الشاملة.xlsx`);
+        }
+
+        function importExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+
+                workbook.SheetNames.forEach((sheetName, sIdx) => {
+                    if (sIdx > 2) return;
+                    const worksheet = workbook.Sheets[sheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+
+                    const tabContent = document.getElementById(`tab-${sIdx}`);
+                    if (!tabContent) return;
+                    const rows = tabContent.querySelectorAll('tbody tr');
+
+                    for (let i = 1; i < json.length && i <= rows.length; i++) {
+                        const excelRow = json[i];
+                        const targetRow = rows[i - 1];
+                        const inputs = targetRow.querySelectorAll('input');
+                        
+                        if (excelRow[1] !== undefined && inputs[0]) {
+                            inputs[0].value = excelRow[1];
+                        }
+                        for (let j = 2; j < excelRow.length && (j - 2) < inputs.length; j++) {
+                            if (inputs[j - 1]) {
+                                inputs[j - 1].value = excelRow[j] !== undefined ? excelRow[j] : '';
+                                inputs[j - 1].dispatchEvent(new Event('input'));
+                            }
+                        }
+                    }
+                });
+
+                updateTab0DynamicAverages();
+                alert('تم استيراد كافة البيانات بنجاح واستعادتها كاملة!');
+                event.target.value = '';
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function switchTab(index) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+            
+            tabs.forEach((tab, idx) => {
+                tab.classList.remove('active');
+                if(buttons[idx]) buttons[idx].classList.remove('active');
+            });
+
+            if(tabs[index]) tabs[index].classList.add('active');
+            if(buttons[index]) buttons[index].classList.add('active');
+        }
+
+        let currentZoom = 1;
+        function adjustZoom(amount) {
+            currentZoom += amount;
+            if (currentZoom < 0.7) currentZoom = 0.7;
+            if (currentZoom > 1.3) currentZoom = 1.3;
+            document.getElementById('mainWrapper').style.transform = `scale(${currentZoom})`;
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        function toggleUI() {
+            const topBar = document.getElementById('topBar');
+            if(topBar) topBar.classList.toggle('hidden-ui');
+        }
+
+        window.onload = function() {
+            generateTables();
+            const monthSelects = document.querySelectorAll('.month-select');
+            if(monthSelects.length >= 2) {
+                monthSelects[0].value = 'اكتوبر';
+                monthSelects[1].value = 'نوفمبر';
+            }
+        };
+    </script>
+</body>
+</html>
