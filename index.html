@@ -665,7 +665,7 @@
     <footer>All rights are reserved to Dr. Mazen Badawy – Doctor of English Teaching & Testing</footer>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxMLHX-ulowWlA8Y9DR4cADhazh4U2mtAFpdSrrxmu34zu5jQn-fEWDCgSphQRl0uGh/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbydUp-X6VVAIFNll4wfj4Lr0E-CfkdPtRWe4Duyo3o/dev";
 
         function saveToGoogleSheet() {
             const payload = { sheets: [] };
@@ -680,7 +680,7 @@
                 const data = [];
 
                 const headers = [];
-                tabContent.querySelectorAll('thead tr:last-child th, thead tr th').forEach(th => {
+                tabContent.querySelectorAll('thead tr:last-child th, th').forEach(th => {
                     headers.push(th.innerText.replace(/\n/g, ' '));
                 });
                 data.push(headers);
@@ -708,21 +708,25 @@
                 });
             }
 
-            alert("جاري حفظ البيانات في جوجل شيت...");
+            alert("جاري إرسال البيانات وحفظها في جوجل شيت...");
 
-            fetch(WEB_APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            }).then(() => {
-                alert("تم إرسال البيانات إلى جوجل شيت بنجاح! يمكنك الآن مراجعتها بداخل الملف.");
-            }).catch(err => {
-                console.error(err);
-                alert("حدث خطأ أثناء الحفظ في جوجل شيت.");
-            });
+            // استخدام تقنية Form للتغلب على قيود متصفحات الويب وعقبة CORS
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = WEB_APP_URL;
+            form.target = '_blank';
+
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'data';
+            input.value = JSON.stringify(payload);
+
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+
+            alert("تم إرسال البيانات بنجاح! تفقد ملف جوجل شيت لتراها فوراً.");
         }
 
         function loadFromGoogleSheet() {
@@ -769,7 +773,7 @@
                     updateTab0DynamicAverages();
                 })
                 .catch(err => {
-                    console.log("جارٍ تهيئة الاتصال أو بانتظار المدخلات:", err);
+                    console.log("جارٍ تهيئة البيانات:", err);
                 });
         }
 
@@ -1230,7 +1234,7 @@
                 const data = [];
 
                 const headers = [];
-                tabContent.querySelectorAll('thead tr:last-child th, thead tr th').forEach(th => {
+                tabContent.querySelectorAll('thead tr:last-child th, th').forEach(th => {
                     headers.push(th.innerText.replace(/\n/g, ' '));
                 });
                 data.push(headers);
@@ -1340,7 +1344,7 @@
                 monthSelects[0].value = 'اكتوبر';
                 monthSelects[1].value = 'نوفمبر';
             }
-            // استعادة البيانات تلقائياً بأسماء الطلاب وكافة الدرجات عند فتح التطبيق
+            // استعادة البيانات تلقائياً وتعبئة الأسماء والدرجات فور فتح الصفحة
             loadFromGoogleSheet();
         };
     </script>
