@@ -524,7 +524,7 @@
                 <!-- Pages generated via JS -->
             </div>
 
-            <!-- الأزرار متواجدة في النموذج الأول فقط حصرياً -->
+            <!-- Action Buttons Row -->
             <div class="action-row">
                 <input type="file" id="excel-file-0" style="display:none" accept=".xlsx, .xls" onchange="importExcel(event)">
                 <button class="btn-action btn-import" onclick="document.getElementById('excel-file-0').click()">استيراد اكسل</button>
@@ -651,7 +651,7 @@
     <footer>All rights are reserved to Dr. Mazen Badawy – Doctor of English Teaching & Testing</footer>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbydUp-X6VVAIFNll4wfj4Lr0E-CfkdPtRWe4Duyo3o/dev";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzZ1p14DEr-x2WGsY0fwTa0AIqWpF_W_vCnhQZzUFA9ksByAVEQE_l8JWrItIRMoXIe/exec";
 
         function saveToGoogleSheet() {
             const payload = { sheets: [] };
@@ -699,28 +699,29 @@
 
             alert("جاري إرسال البيانات وحفظها في جوجل شيت...");
 
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = WEB_APP_URL;
-            form.target = '_blank';
+            const formData = new URLSearchParams();
+            formData.append('data', JSON.stringify(payload));
 
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'data';
-            input.value = JSON.stringify(payload);
-
-            form.appendChild(input);
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
-
-            alert("تم حفظ كافة الأسماء والدرجات وتصديرها إلى جوجل شيت بنجاح!");
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
+            })
+            .then(() => {
+                alert("تم حفظ كافة الأسماء والدرجات وتصديرها إلى جوجل شيت بنجاح!");
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("حدث خطأ أثناء حفظ البيانات: " + error);
+            });
         }
 
         function loadFromGoogleSheet() {
-            // استخدام تقنية JSONP لتجاوز قيود CORS وجلب البيانات بسلاسة من جوجل شيت
             const script = document.createElement('script');
-            script.src = `${WEB_APP_URL}?callback=handleSheetData`;
+            script.src = `${WEB_APP_URL}?callback=handleSheetData&_ts=${Date.now()}`;
             document.body.appendChild(script);
         }
 
